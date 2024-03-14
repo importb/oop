@@ -8,7 +8,7 @@ COPY .env /app/.env
 
 RUN apt-get update && apt-get -y install cron nano
 
-RUN python3 -m pip install requests
+RUN python3 -m pip install requests mysql-connector-python python-dotenv
 
 ADD crontab /etc/cron.d/crontab
 
