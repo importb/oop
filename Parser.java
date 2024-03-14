@@ -1,5 +1,4 @@
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 
 public class Parser {
     /**
@@ -17,6 +16,27 @@ public class Parser {
 
         return uus;
     }
+
+    /**
+     * leiab pikast httpresponse tekstist välja edetabeli nimed.
+     *
+     * @param data - httpresponse
+     * @return massiiv, kus on kõik edetabeli nimed.
+     */
+    public static String[] leiaEdetabeliNimed(HttpResponse<String> data) {
+        // muuda pikk jada teksti massiiviks ridade põhjal.
+        String[] dataArr = data.body().replace("\t", "").split("\n");
+        String[] edetabeliNimed = new String[0];
+
+        for (String line : dataArr) {
+            if (line.startsWith("<h1>")) {
+                edetabeliNimed = lisaMassiivi(edetabeliNimed, line.substring(4, line.length()-5));
+            }
+        }
+
+        return edetabeliNimed;
+    }
+
 
     /**
      * leiab pikast httpresponse tekstist välja osalejad.
@@ -82,19 +102,22 @@ public class Parser {
             // Osaleja info
             String osaleja = osalejad[i];
             String osalejaKohtStr = osaleja.split("\\.")[0];
-            int osalejaKoht = 999;
-            if (!osalejaKohtStr.equals("Juh")) osalejaKoht = Integer.parseInt(osalejaKohtStr);
 
-            // Tulemuse info
-            String tulemus = tulemused[i];
+            if (!osalejaKohtStr.equals("Juh")) {
+                // osaleja koht int
+                int osalejaKoht = Integer.parseInt(osalejaKohtStr);
 
-            // Vaatame, kas oleme jõudnud uue edetabelini
-            if (osalejaKoht == 1) praeguneEdetabel++;
+                // Tulemuse info
+                String tulemus = tulemused[i];
 
-            // Lisame massiividesse
-            if (edetabeliIndeks == praeguneEdetabel) {
-                osalejateEdetabel = lisaMassiivi(osalejateEdetabel, osaleja);
-                tulemusteEdetabel = lisaMassiivi(tulemusteEdetabel, tulemus);
+                // Vaatame, kas oleme jõudnud uue edetabelini
+                if (osalejaKoht == 1) praeguneEdetabel++;
+
+                // Lisame massiividesse
+                if (edetabeliIndeks == praeguneEdetabel) {
+                    osalejateEdetabel = lisaMassiivi(osalejateEdetabel, osaleja);
+                    tulemusteEdetabel = lisaMassiivi(tulemusteEdetabel, tulemus);
+                }
             }
         }
 
