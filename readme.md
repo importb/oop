@@ -25,6 +25,11 @@ contests:
 | -- | ---- | ------ |
 | PK int | varchar(50) | serial |
 
+users: 
+| id | pseudo | real name |
+| -- | ------ | --------- |
+| PK serial | varchar(20) | varchar(40) |
+
 results:
 | contestID | timestamp | results |
 | --------- | --------- | ------- |
