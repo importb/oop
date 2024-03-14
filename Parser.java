@@ -40,12 +40,17 @@ public class Parser {
         return osalejad;
     }
 
-
+    /**
+     * leiab pikast httpresponse tekstist välja tulemused.
+     *
+     * @param data - httpresponse
+     * @return massiiv, kus on kõik tulemused jaotamata.
+     */
     public static String[] leiaTulemused(HttpResponse<String> data) {
         // muuda pikk jada teksti massiiviks ridade põhjal.
         String[] dataArr = data.body().replace("\t", "").split("\n");
 
-        // leia kasutajad ja lisa massiivi
+        // leia tulemused ja lisa massiivi
         String[] tulemused = new String[0];
 
         for (String line : dataArr) {
@@ -56,34 +61,48 @@ public class Parser {
                 tulemused = lisaMassiivi(tulemused, tulemus);
             }
         }
+
         return tulemused;
     }
 
-    public static String[] leiaEdetabel(String[] osalejad, String[] tulemused, int edetabeliIndeks) {
-        int eIndeks = 0;  // edetabeli indeks.
-        String[] edetabel = new String[0];
+    /**
+     * tagastab otsitava edetabeli osalejad ja nende tulemused.
+     * @param osalejad - antud osalejate massiiv
+     * @param tulemused - antud tulemuste massiiv
+     * @param edetabeliIndeks - mitmendat edetabelit otsime.
+     * @return - kahejärjendiline massiiv, kus 0. on osalejate massiiv ja 1. on tulemuste massiiv.
+     */
+    public static String[][] leiaEdetabel(String[] osalejad, String[] tulemused, int edetabeliIndeks) {
+        String[][] tagastus = new String[2][];
+        String[] osalejateEdetabel = new String[0];
+        String[] tulemusteEdetabel = new String[0];
+        int praeguneEdetabel = 0;
 
-        int indeks = 0;
-        for (String osaleja : osalejad) {
-            // Leia koht numbrina
-            String koht = osaleja.split("\\.")[0];
-            int kohaNr = 999;  // juhendaja koht. todo. maybe?
-            if (!koht.equals("Juh")) {
-                kohaNr = Integer.parseInt(koht);
+        for (int i = 0; i < osalejad.length; i++) {
+            // Osaleja info
+            String osaleja = osalejad[i];
+            String osalejaKohtStr = osaleja.split("\\.")[0];
+            int osalejaKoht = 999;
+            if (!osalejaKohtStr.equals("Juh")) osalejaKoht = Integer.parseInt(osalejaKohtStr);
+
+            // Tulemuse info
+            String tulemus = tulemused[i];
+
+            // Vaatame, kas oleme jõudnud uue edetabelini
+            if (osalejaKoht == 1) praeguneEdetabel++;
+
+            // Lisame massiividesse
+            if (edetabeliIndeks == praeguneEdetabel) {
+                osalejateEdetabel = lisaMassiivi(osalejateEdetabel, osaleja);
+                tulemusteEdetabel = lisaMassiivi(tulemusteEdetabel, tulemus);
             }
-
-            // edetabeli indeks
-            if (kohaNr == 1) eIndeks++;
-
-            // lisa edetabelisse
-            if ((eIndeks == edetabeliIndeks) && (kohaNr != 999)){
-                edetabel = lisaMassiivi(edetabel, String.format("%s - %s", osaleja, tulemused[indeks]));
-            }
-
-            indeks++;
         }
 
-        return edetabel;
+        // Lisame tagastusmassiivi
+        tagastus[0] = osalejateEdetabel;
+        tagastus[1] = tulemusteEdetabel;
+
+        return tagastus;
     }
 
 }
