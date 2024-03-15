@@ -1,1 +1,1 @@
-*/5 * * * * /usr/local/bin/python3 /app/main.py >> /var/log/cron.log 2>&1
+*/5 * * * * /usr/bin/java -cp /app Main "/app/data/" >> /var/log/cron.log 2>&1
