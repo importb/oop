@@ -1,2 +1,4 @@
 kaabitseja/data/
 kaabitseja/.env
+kaabitseja/*.class
+kaabitseja/data*

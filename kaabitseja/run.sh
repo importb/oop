@@ -1,1 +1,1 @@
-java -cp .:mysql-connector-j-8.0.31.jar:org.json-1.6-20240205.jar Main
+java -cp .:mysql-connector-j-8.0.31.jar:org.json-1.6-20240205.jar Main "/app/data/"
