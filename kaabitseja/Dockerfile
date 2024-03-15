@@ -1,23 +1,24 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+FROM ubuntu:latest
 
 WORKDIR /app
 
-COPY main.py /app/main.py
-COPY .env /app/.env
+# Set environment variables for Java installation
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH $PATH:$JAVA_HOME/bin
 
-RUN apt-get update && apt-get -y install cron nano
+# Install Java
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk cron && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m pip install requests mysql-connector-python python-dotenv
+COPY .env /app/
+COPY Main.java /app/
+RUN mkdir /app/data 
+RUN javac -encoding UTF-8 Main.java
 
-ADD crontab /etc/cron.d/crontab
+ADD crontab /etc/cron.d/java-cron
+RUN chmod 0644 /etc/cron.d/java-cron
+RUN chmod 0777 /app
+RUN crontab /etc/cron.d/java-cron
 
-RUN chmod 0644 /etc/cron.d/crontab
-
-RUN crontab /etc/cron.d/crontab
-
-RUN mkdir /app/data
-
-RUN touch /var/log/cron.log
-
-CMD cron && tail -f /var/log/cron.log
+CMD ["cron", "-f"]

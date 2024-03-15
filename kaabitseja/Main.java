@@ -1,0 +1,117 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class Main {
+    /**
+     * lisab massiivi string elemendi
+     *
+     * @param massiiv - antud massiiv
+     * @param element - antud element
+     * @return - massiiv koos uue elemendiga.
+     */
+    public static String[] lisaMassiivi(String[] massiiv, String element) {
+        String[] uus = new String[massiiv.length + 1];
+
+        System.arraycopy(massiiv, 0, uus, 0, massiiv.length);
+        uus[massiiv.length] = element;
+
+        return uus;
+    }
+
+    /**
+     * kaabitseb veebilehe data
+     *
+     * @param link - link mida kaabitseda
+     * @return - HttpResponse koos dataga.
+     * @throws Exception - errors.
+     */
+    public static HttpResponse<String> scrapeWebsite(String link) throws Exception {
+        // client
+        HttpClient client = HttpClient.newHttpClient();
+
+        // req
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(link))
+                .build();
+
+        // response
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public static void main(String[] args) throws Exception {
+        HttpResponse<String> unparsedData = scrapeWebsite("http://www.phxc.ee");
+        String[] bodyData = unparsedData.body().replace("\t", "").split("\n");
+
+        // Massiivid osalejate ja skooride jaoks
+        String[] osalejad = new String[0];
+        String[] skoorid = new String[0];
+        String[] edetabelid = new String[0];
+
+        // Käime kõik read läbi ja otsime osaleja ja skoori.
+        for (String line : bodyData) {
+            if (line.startsWith("<h1>")) {
+                edetabelid = lisaMassiivi(edetabelid, line.substring(4, line.length() - 5));
+            }
+            if (line.startsWith("<span class=\"pseudo\">")) {
+                String lineVormistatud = line.substring(21, line.length() - 7);
+                osalejad = lisaMassiivi(osalejad, lineVormistatud);
+            }
+            if (line.startsWith("<span class=\"skoor\">")) {
+                String lineVormistatud = line.substring(20, line.length() - 7).replace("<span class=\"komakoht\">", "").replace("</span>", "");
+                skoorid = lisaMassiivi(skoorid, lineVormistatud);
+            }
+        }
+
+        // Viime JSON vormi ja lisame faili.
+        int edetabel = 0;
+        for (int i = 0; i < osalejad.length; i++) {
+            // osaleja ja skoor
+            String osaleja = osalejad[i];
+            String osalejaNr = osaleja.split("\\.")[0];
+            String skoor = skoorid[i];
+
+            // timestamp
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            Date currentDate = new Date();
+            String now = dateFormat.format(currentDate);
+
+            // lisa faili
+            if (!osalejaNr.equals("Juh")) {
+                // edetabeli id.
+                if (Integer.parseInt(osalejaNr) == 1) edetabel++;
+
+                // niisama jooksutades hoiame relatiivset failipathi, cronis anname talle /app/ kausta ette
+                String kaust;
+                if (args != null && args.length > 0) {
+                    kaust = args[0];
+                } else {
+                    kaust = "./";
+                }
+
+                // ava fail kirjutamiseks
+                File fail = new File(kaust + "data_" + now + ".txt");
+                FileWriter kirjutaja = new FileWriter(fail, true);
+
+                // vormista JSON
+                String JSON = String.format(
+                        "{\"timestamp\":\"%s\", \"edetabel_id\":%s, \"edetabel_nimi\":\"%s\",\"osaleja\":\"%s\", \"skoor\":%s}",
+                        now,
+                        edetabel,
+                        edetabelid[edetabel - 1],
+                        osaleja.split("\\.")[1].substring(1),
+                        Float.parseFloat(skoor.substring(0, skoor.length() - 3))
+                );
+
+                // kirjuta ja sulge.
+                kirjutaja.write(JSON + "\n");
+                kirjutaja.close();
+            }
+        }
+    }
+}
