@@ -1,11 +1,24 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.json.JSONObject;
 
 public class Main {
     /**
@@ -44,6 +57,85 @@ public class Main {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    public static Map<String, String> readEnvFile() {
+        Map<String, String> envMap = new HashMap<>();
+        BufferedReader reader = null;
+        try {
+            // Read the .env file
+            reader = new BufferedReader(new FileReader(".env"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Split the line by "=" to extract key-value pairs
+                String[] parts = line.split("=", 2);
+                if (parts.length == 2) {
+                    String key = parts[0].trim();
+                    String value = parts[1].trim();
+                    envMap.put(key, value);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading .env file: " + e.getMessage());
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                // Ignore
+            }
+        }
+        return envMap;
+    }
+
+    public static void writeDataToDatabase(ArrayList<String> data) throws SQLException, ClassNotFoundException {
+        Map<String, String> envMap = readEnvFile();
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.json.JSONObject");
+            Connection connection = DriverManager.getConnection(
+                String.format("jdbc:mysql://%s:%s/%s", envMap.get("MYSQL_HOST"), envMap.get("MYSQL_PORT"), envMap.get("MYSQL_NAME")),
+                envMap.get("MYSQL_USERNAME"), 
+                envMap.get("MYSQL_PASSWORD")
+            );
+            System.out.println("Connection õnnestus");
+
+            StringBuilder päring = new StringBuilder("insert into data (edetabel_id, edetabel_nimi, osaleja, skoor, aeg) values ");
+
+            for (int i = 0; i < data.size(); i++) {
+                if (i != 0) {
+                    päring.append(", ");
+                } 
+
+                JSONObject jsonobject = new JSONObject(data.get(i));
+                päring.append(String.format("(%d, \"%s\", \"%s\", %.2f, \"%s\")", 
+                        jsonobject.getInt("edetabel_id"), 
+                        jsonobject.getString("edetabel_nimi"), 
+                        jsonobject.getString("osaleja"), 
+                        jsonobject.getFloat("skoor"), 
+                        jsonobject.getString("timestamp")
+                    )
+                );
+                
+            }
+            
+            System.out.println(päring.toString());
+
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(päring.toString());
+            
+            statement.close();
+            connection.close();
+            System.out.println("Päring õnnestus!");
+        } catch (SQLException e) {
+            System.out.println("SQL exception!");
+            e.printStackTrace();   
+            
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         HttpResponse<String> unparsedData = scrapeWebsite("http://www.phxc.ee");
         String[] bodyData = unparsedData.body().replace("\t", "").split("\n");
@@ -68,6 +160,8 @@ public class Main {
             }
         }
 
+        ArrayList<String> JSONdata = new ArrayList<String>();
+
         // Viime JSON vormi ja lisame faili.
         int edetabel = 0;
         for (int i = 0; i < osalejad.length; i++) {
@@ -77,7 +171,7 @@ public class Main {
             String skoor = skoorid[i];
 
             // timestamp
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date currentDate = new Date();
             String now = dateFormat.format(currentDate);
 
@@ -108,10 +202,15 @@ public class Main {
                         Float.parseFloat(skoor.substring(0, skoor.length() - 3))
                 );
 
+                JSONdata.add(JSON);
+
                 // kirjuta ja sulge.
                 kirjutaja.write(JSON + "\n");
                 kirjutaja.close();
             }
         }
+        System.out.println("Kirjutatud faili!");
+
+        writeDataToDatabase(JSONdata);
     }
 }
