@@ -53,14 +53,17 @@ results JSON struktuur:
 plaanis veel lisada:
 osaleja, edetabeli klassid.
 
+
 Osaleja:
-String nimi;             - osaleja nimi.
-Edetabel[] edetabelid;   - näitab millistes edetabelites osales
-Float[] skoorid;         - osaleja skoorid erinvates edetabelites. nt kui osales 1. ja 3., siis massiiv näeks välja [4.5, 0, 123.4] vms.
+* String nimi;             - osaleja nimi.
+* Edetabel[] edetabelid;   - näitab millistes edetabelites osales
+* Float[] skoorid;         - osaleja skoorid erinvates edetabelites. nt kui osales 1. ja 3., siis massiiv näeks välja [4.5, 0, 123.4] vms.
+
 
 Edetabel:
-int id;              - edetabeli id
-String nimi;         - edetabeli nimi
-Osaleja[] osalejad   - edetabeli osalejad.
+* int id;              - edetabeli id
+* String nimi;         - edetabeli nimi
+* Osaleja[] osalejad   - edetabeli osalejad.
+
 
 loomulikult struktuur võib muutuda, aga see praegune idee.
