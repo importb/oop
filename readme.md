@@ -39,7 +39,8 @@ Java programm, mis kaabitseb lehelt aktiivsete edetabelite tulemusi iga 5 minuti
 
 
 ## terminalApp
-lühikirjeldus todo. 
+Programm, mis kaabitseb phxc lehekülje.
+Programmis saab vaadelda edetabeleid, üksikute osalejate tulemusi, millistest edetabelites nad osalenud on, mis nende ELO on ning millised nende tulemused on edetabelites olnud.
 
 Klasside ja funktsioonide info: 
 [Klassid, funktsioonid](terminalApp/README.md)
