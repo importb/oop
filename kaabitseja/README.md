@@ -34,3 +34,7 @@ Ma ei tea mulle ei meeldi Windows. Aga mysql-connector ja org.json jar failid pe
 ## Mis on kus konteineris?
 
 `/app/` on peakaust, seal on Main.java ja Main.class failid + jar lisad. Tekstilised logid kirjutatakse `/app/data/` kausta, faili nimes on kirjutamise aeg
+
+Logisid saab vaadata /var/log/cron.log failist
+
+TODO: dockeri volüümide peale salvestada data_*.txt failid, et need jääks ka restartides

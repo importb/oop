@@ -18,6 +18,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+
 import org.json.JSONObject;
 
 public class Main {
@@ -100,14 +102,39 @@ public class Main {
             );
             System.out.println("Connection õnnestus");
 
+            Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
+            // hangime edetabelite tähtajad
+            Statement fetchStatement = connection.createStatement();
+            ResultSet rs = fetchStatement.executeQuery("select * from edetabelid");
+            ArrayList<String> relevantsedEdetabelid = new ArrayList<String>();
+            while (rs.next()) {
+                String edetabelNimi = rs.getString("edetabel_nimi");
+                String deadlineString = rs.getString("deadline");
+                Timestamp deadlineTimestamp = Timestamp.valueOf(deadlineString);
+
+                // kui pole veel tähtajas
+                if (currentTime.before(deadlineTimestamp)) {
+                    relevantsedEdetabelid.add(edetabelNimi);
+                } 
+            }
+
+            System.out.println(relevantsedEdetabelid);
             StringBuilder päring = new StringBuilder("insert into data (edetabel_id, edetabel_nimi, osaleja, skoor, aeg) values ");
 
+            int addedCount = 0;
+
             for (int i = 0; i < data.size(); i++) {
-                if (i != 0) {
+                JSONObject jsonobject = new JSONObject(data.get(i));
+
+                if (!relevantsedEdetabelid.contains(jsonobject.getString("edetabel_nimi"))) {
+                    continue;
+                }
+
+                if (addedCount != 0) {
                     päring.append(", ");
                 } 
 
-                JSONObject jsonobject = new JSONObject(data.get(i));
                 päring.append(String.format("(%d, \"%s\", \"%s\", %.2f, \"%s\")", 
                         jsonobject.getInt("edetabel_id"), 
                         jsonobject.getString("edetabel_nimi"), 
@@ -116,7 +143,7 @@ public class Main {
                         jsonobject.getString("timestamp")
                     )
                 );
-                
+                addedCount++;
             }
             
             System.out.println(päring.toString());
