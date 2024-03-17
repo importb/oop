@@ -16,39 +16,31 @@ lõppprodukti ideed:
 
 db struktuur:
 
-contests:
+edetabelid:
 
-| id | nimi | jrk nr |
-| -- | ---- | ------ |
-| PK int | varchar(50) | serial |
+| nimi | deadline |
+| ---- | ------ |
+| varchar(50) | datetime |
 
-users: 
+
+data: (kaabitsetud andmed)
+| edetabel_id | edetabel_nimi | osaleja | skoor | aeg |
+| ----------- | ------------- | ------- | ----- | --- |
+| int(11) | varchar(30) | varchar(30) | float | timestamp |
+
+users (TODO hiljem): 
 | id | pseudo | real name |
 | -- | ------ | --------- |
 | PK serial | varchar(20) | varchar(40) |
 
-results:
-| contestID | timestamp | results |
-| --------- | --------- | ------- |
-| FK from contests | ISODateString | JSON | 
+## Kaabitseja
 
-results JSON struktuur:
-```js
-[
-    {
-        rank: number,
-        pseudoname: string,
-        runtime: float
-    },
-    {
-        rank: number,
-        pseudoname: string,
-        runtime: float
-    },
-    // ...
-]
+Java programm, mis kaabitseb lehelt aktiivsete edetabelite tulemusi iga 5 minuti tagant. Täpsemalt [alamkaustas](kaabitseja/README.md)
 
-```
+
+## terminalApp
+
+TODO
 
 plaanis veel lisada:
 - parem dokumentatsioon, tmrw for sure.
