@@ -50,6 +50,6 @@
     - `toString()` : tagastab edetabeli info.
     - `lisaOsaleja(Osaleja osaleja)` : lisab osaleja selle edetabeli osalejate massiivi, kui juba lisatud ei ole. Ehk duplikaate tekkida ei saa.
     - `leiaOsalejaSkoor(Osaleja osaleja)` : tagastab osaleja skoori edetabelis.
-    - `leiaOsalejaKoht(Osaleja osaleja)` : tagastab osaleja koha edetabelis.
+    - `leiaOsalejaKoht(Osaleja osaleja, int type)` : tagastab osaleja koha edetabelis. (type: 0 - kõik osalejad, 1 - ilma juh., 2 - ainult juh.)
     - `leiaOsaleja(String osalejaNimi)` : tagastab Osaleja objekti tema nime kaudu.
 
