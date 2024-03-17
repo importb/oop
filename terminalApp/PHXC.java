@@ -100,7 +100,7 @@ public class PHXC {
                 // edetabeli näitamine
                 case "1":
                     System.out.println("Millist edetabelit soovite näha?");
-                    int number = Integer.parseInt(String.valueOf(sisend.nextLine()));
+                    int number = Math.max(1, Math.min(edetabelid.length, Integer.parseInt(String.valueOf(sisend.nextLine()))));
                     Edetabel edetabel = edetabelid[number - 1];
                     System.out.println(edetabel);
 

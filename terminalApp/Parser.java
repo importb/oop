@@ -19,7 +19,6 @@ public class Parser {
         return uus;
     }
 
-
     /**
      * leiab pikast httpresponse tekstist välja edetabeli nimed.
      *

@@ -47,17 +47,56 @@ public class Osaleja {
 
     public String toString() {
         StringBuilder edetabelid = new StringBuilder();
+        int kohtadeSumma = 0;
+        int tulemusiKokku = 0;
+        int erikohtadeSumma = 0;
+        StringBuilder tulemused = new StringBuilder();
+        StringBuilder kohad = new StringBuilder();
+        StringBuilder kohadEri = new StringBuilder();
 
         for(Edetabel edetabel : this.edetabelid){
+            // Edetabelite nimed
             edetabelid.append("[ ").append(edetabel.getNimi()).append(" ] ");
+
+            // Keskmise koha arvutamine (peamine edetabel)
+            kohtadeSumma += edetabel.leiaOsalejaKoht(this, 0) + 1;
+            tulemusiKokku++;
+
+            // Edetabeli skoor osalejal
+            tulemused.append(String.format("[ %s ms ] ", edetabel.leiaOsalejaSkoor(this) + 1));
+
+            // Edetabeli koht osalejal (peamine edetabel)
+            kohad.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 0) + 1));
+
+            // Juhendaja vaba edetabeli kohad ja keskmine koht
+            if (!juhendaja){
+                erikohtadeSumma += edetabel.leiaOsalejaKoht(this, 1) + 1;
+                kohadEri.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 1) + 1));
+            }
+            // Juhendajate edetabeli koht ja keskmine koht
+            if (juhendaja) {
+                erikohtadeSumma += edetabel.leiaOsalejaKoht(this, 2) + 1;
+                kohadEri.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 2) + 1));
+            }
         }
+
+        String eriKohadeTekst = "ilma juh. :";
+        if (juhendaja) eriKohadeTekst = "juh. :     ";
 
         return String.format(
                 """
                 %s, ID: %s
-                - Osaleb edetabelites: %s
-                - ELO: %s""",
-            getNimi(), id, edetabelid, getELO()
+                - Osaleb edetabelites:    %s
+                - Tulemused:              %s
+                
+                - Kohad:                  %s
+                - Keskmine koht:          %s.
+                
+                - Kohad %s       %s
+                - Keskmine koht:          %s.
+                
+                - ELO:                    %s""",
+            getNimi(), id, edetabelid, tulemused, kohad, kohtadeSumma / tulemusiKokku, eriKohadeTekst, kohadEri, erikohtadeSumma / tulemusiKokku, getELO()
         );
     }
 
@@ -82,7 +121,7 @@ public class Osaleja {
         int[] eloTeenimine = {100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -10, -15, -20, -25, -30, -35, -40, -45, -50};
 
         for (Edetabel edetabel : this.getEdetabelid()) {
-            int koht = edetabel.leiaOsalejaKoht(this);
+            int koht = edetabel.leiaOsalejaKoht(this, 0);
             uusELO += eloTeenimine[Math.min(koht, eloTeenimine.length - 1)];
         }
 

@@ -33,7 +33,7 @@ public class Edetabel {
         // osalejad ja nende skoorid
         for (int i = 0; i < osalejad.length; i++) {
             String spaces = " ".repeat(25 - osalejad[i].getNimi().length());
-            vastus.append(String.format("%02d. %s%s%s ms\n", i + 1, osalejad[i], spaces, skoorid[i]));
+            vastus.append(String.format("%02d. %s%s%s ms\n", i + 1, osalejad[i].getNimi(), spaces, skoorid[i]));
         }
 
         return vastus.toString();
@@ -78,8 +78,8 @@ public class Edetabel {
 
 
     /**
-     * Leiab osaleja skoori tema terminalApp.Osaleja objekti järgi.
-     * @param osaleja - antud terminalApp.Osaleja
+     * Leiab osaleja skoori tema Osaleja objekti järgi.
+     * @param osaleja - antud Osaleja
      * @return skoor selles edetabelis, juhul kui puudub siis tagastab null.
      */
     public Float leiaOsalejaSkoor(Osaleja osaleja) {
@@ -101,13 +101,19 @@ public class Edetabel {
     }
 
     /**
-     * Leiab osaleja koha tema terminalApp.Osaleja objekti järgi.
-     * @param osaleja - antud terminalApp.Osaleja
-     * @return koht selles edetabelis, juhul kui puudub siis tagastab null.
+     * Leiab osaleja koha edetabelis.
+     * @param osaleja - antud Osaleja
+     * @param type - mis tüüpi edetabelit vaatame, 0 - kõik koos, 1 - ilma juhendajateta, 2 - ainult juhendajad.
+     * @return - osaleja koht.
      */
-    public Integer leiaOsalejaKoht(Osaleja osaleja) {
+    public Integer leiaOsalejaKoht(Osaleja osaleja, int type) {
         int i = 0;
         for(Osaleja o : osalejad){
+            // Ilma juh.
+            if (type == 1) if (o.isJuhendaja()) i--;
+            // Ainult juh
+            if (type == 2) if (!o.isJuhendaja()) i--;
+
             if (o.getNimi().equals(osaleja.getNimi())){
                 return i;
             }
@@ -123,7 +129,7 @@ public class Edetabel {
      */
     public Osaleja leiaOsaleja(String osalejaNimi) {
         for (Osaleja osaleja : osalejad) {
-            if (osaleja.getNimi().equals(osalejaNimi)) {
+            if (osaleja.getRealNimi().equals(osalejaNimi)) {
                 return osaleja;
             }
         }
