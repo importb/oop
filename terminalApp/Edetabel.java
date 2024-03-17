@@ -1,3 +1,6 @@
+package terminalApp;
+
+import terminalApp.Osaleja;
 
 public class Edetabel {
     private String nimi;
@@ -42,7 +45,7 @@ public class Edetabel {
     /**
      * Lisab osaleja selle edetabeli osalejate massiivi, kui teda veel ei ole lisatud.
      * Ehk sama nimega osalejaid ei saa olla.
-     * @param osaleja - antud Osaleja
+     * @param osaleja - antud terminalApp.Osaleja
      */
     public void lisaOsaleja(Osaleja osaleja) {
         boolean jubaOlemas = false;
@@ -65,7 +68,7 @@ public class Edetabel {
 
     /**
      * Lisab skoori selle edetabeli skooridesse.
-     * Otseselt ei seosta seda Osaleja objektiga, selle jaoks kasutada leiaOsalejaSkoor()
+     * Otseselt ei seosta seda terminalApp.Osaleja objektiga, selle jaoks kasutada leiaOsalejaSkoor()
      * @param skoor - antud skoor.
      */
     public void lisaSkoor(float skoor) {
@@ -77,8 +80,8 @@ public class Edetabel {
 
 
     /**
-     * Leiab osaleja skoori tema Osaleja objekti järgi.
-     * @param osaleja - antud Osaleja
+     * Leiab osaleja skoori tema terminalApp.Osaleja objekti järgi.
+     * @param osaleja - antud terminalApp.Osaleja
      * @return skoor selles edetabelis, juhul kui puudub siis tagastab null.
      */
     public Float leiaOsalejaSkoor(Osaleja osaleja) {
@@ -100,8 +103,8 @@ public class Edetabel {
     }
 
     /**
-     * Leiab osaleja koha tema Osaleja objekti järgi.
-     * @param osaleja - antud Osaleja
+     * Leiab osaleja koha tema terminalApp.Osaleja objekti järgi.
+     * @param osaleja - antud terminalApp.Osaleja
      * @return koht selles edetabelis, juhul kui puudub siis tagastab null.
      */
     public Integer leiaOsalejaKoht(Osaleja osaleja) {
@@ -116,9 +119,9 @@ public class Edetabel {
     }
 
     /**
-     * Leiab Osaleja objekti tema nime kaudu.
+     * Leiab terminalApp.Osaleja objekti tema nime kaudu.
      * @param osalejaNimi - antud nimi
-     * @return - Osaleja objekt
+     * @return - terminalApp.Osaleja objekt
      */
     public Osaleja leiaOsaleja(String osalejaNimi) {
         for (Osaleja osaleja : osalejad) {

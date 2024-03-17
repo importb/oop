@@ -1,3 +1,4 @@
+package terminalApp;
 import java.net.http.HttpResponse;
 import java.util.*;
 
@@ -5,7 +6,7 @@ public class PHXC {
     /**
      * Lisab osaleja osalejad massiivi.
      * @param osalejad - antud massiiv
-     * @param osaleja - antud Osaleja objekt
+     * @param osaleja - antud terminalApp.Osaleja objekt
      * @return - uue massiivi, kus on vanad elemndid koos uuega.
      */
     public static Osaleja[] lisaOsaleja(Osaleja[] osalejad, Osaleja osaleja) {
@@ -20,7 +21,7 @@ public class PHXC {
     /**
      * Kontrollib kas osaleja on juba lisatud osalejate massiivi
      * @param osalejad - antud massiv
-     * @param osaleja - antud Osaleja objekt
+     * @param osaleja - antud terminalApp.Osaleja objekt
      * @return - true/false selle põhjal kas on juba lisatud.
      */
     public static boolean osalejaJubaLisatud(Osaleja[] osalejad, Osaleja osaleja) {
@@ -126,7 +127,7 @@ public class PHXC {
 
                 // osaleja otsimine
                 case "3":
-                    System.out.print("Osaleja: ");
+                    System.out.print("terminalApp.Osaleja: ");
                     String nimi = String.valueOf(sisend.nextLine());
                     Osaleja otsitav = null;
 

@@ -1,3 +1,5 @@
+package terminalApp;
+
 public class Osaleja {
     private int id;
     private String nimi;
@@ -31,7 +33,7 @@ public class Osaleja {
 
     /**
      * Lisab edetabeli osaleja edetabli massiivi.
-     * @param edetabel - antud Edetabel
+     * @param edetabel - antud terminalApp.Edetabel
      */
     public void lisaEdetabelise(Edetabel edetabel) {
         Edetabel[] uus = new Edetabel[edetabelid.length + 1];

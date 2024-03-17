@@ -1,5 +1,7 @@
 package terminalApp;
+
 import java.net.http.HttpResponse;
+
 
 public class Parser {
     /**
@@ -18,6 +20,7 @@ public class Parser {
         return uus;
     }
 
+
     /**
      * leiab pikast httpresponse tekstist välja edetabeli nimed.
      *
@@ -31,7 +34,7 @@ public class Parser {
 
         for (String line : dataArr) {
             if (line.startsWith("<h1>")) {
-                edetabeliNimed = lisaMassiivi(edetabeliNimed, line.substring(4, line.length()-5));
+                edetabeliNimed = lisaMassiivi(edetabeliNimed, line.substring(4, line.length() - 5));
             }
         }
 
@@ -45,17 +48,29 @@ public class Parser {
      * @param data - httpresponse
      * @return massiiv, kus on kõik osalejad jaotamata.
      */
-    public static String[] leiaOsalejad(HttpResponse<String> data) {
+    public static String[][] leiaOsalejad(HttpResponse<String> data) {
         // muuda pikk jada teksti massiiviks ridade põhjal.
         String[] dataArr = data.body().replace("\t", "").split("\n");
 
-        // leia kasutajad ja lisa massiivi
-        String[] osalejad = new String[0];
-
+        // leia mitu edetabelit on ja koosta kaherealine massiiv
+        int edetabeleid = 0;
         for (String line : dataArr) {
+            if (line.startsWith("<h1>")) {
+                edetabeleid++;
+            }
+        }
+        String[][] osalejad = new String[edetabeleid][0];
+
+        // Lisa massiivi
+        int e = -1;
+        for (String line : dataArr) {
+            if (line.startsWith("<h1>")) {
+                e++;
+            }
+
             if (line.startsWith("<span class=\"pseudo\">")) {
-                String user = line.substring(21, line.length() - 7);
-                osalejad = lisaMassiivi(osalejad, user);
+                String[] userData = line.substring(21, line.length() - 7).split("\\.");
+                osalejad[e] = lisaMassiivi(osalejad[e], userData[1].substring(1));
             }
         }
         return osalejad;
@@ -67,66 +82,34 @@ public class Parser {
      * @param data - httpresponse
      * @return massiiv, kus on kõik tulemused jaotamata.
      */
-    public static String[] leiaTulemused(HttpResponse<String> data) {
+    public static String[][] leiaTulemused(HttpResponse<String> data) {
         // muuda pikk jada teksti massiiviks ridade põhjal.
         String[] dataArr = data.body().replace("\t", "").split("\n");
 
-        // leia tulemused ja lisa massiivi
-        String[] tulemused = new String[0];
-
+        // leia mitu edetabelit on ja koosta kaherealine massiiv
+        int edetabeleid = 0;
         for (String line : dataArr) {
+            if (line.startsWith("<h1>")) {
+                edetabeleid++;
+            }
+        }
+        String[][] skoorid = new String[edetabeleid][0];
+
+        // Lisa massiivi
+        int e = -1;
+        for (String line : dataArr) {
+            if (line.startsWith("<h1>")) {
+                e++;
+            }
+
             if (line.startsWith("<span class=\"skoor\">")) {
-                String tulemus = line.substring(20, line.length() - 7)
+                String skoor = line.substring(20, line.length() - 7)
                         .replace("<span class=\"komakoht\">", "")
-                        .replace("</span>", "");
-                tulemused = lisaMassiivi(tulemused, tulemus);
+                        .replace("</span>", "")
+                        .split("ms")[0];
+                skoorid[e] = lisaMassiivi(skoorid[e], skoor);
             }
         }
-
-        return tulemused;
+        return skoorid;
     }
-
-    /**
-     * tagastab otsitava edetabeli osalejad ja nende tulemused.
-     * @param osalejad - antud osalejate massiiv
-     * @param tulemused - antud tulemuste massiiv
-     * @param edetabeliIndeks - mitmendat edetabelit otsime.
-     * @return - kahejärjendiline massiiv, kus 0. on osalejate massiiv ja 1. on tulemuste massiiv.
-     */
-    public static String[][] leiaEdetabel(String[] osalejad, String[] tulemused, int edetabeliIndeks) {
-        String[][] tagastus = new String[2][];
-        String[] osalejateEdetabel = new String[0];
-        String[] tulemusteEdetabel = new String[0];
-        int praeguneEdetabel = 0;
-
-        for (int i = 0; i < osalejad.length; i++) {
-            // Osaleja info
-            String osaleja = osalejad[i];
-            String osalejaKohtStr = osaleja.split("\\.")[0];
-
-            if (!osalejaKohtStr.equals("Juh")) {
-                // osaleja koht int
-                int osalejaKoht = Integer.parseInt(osalejaKohtStr);
-
-                // Tulemuse info
-                String tulemus = tulemused[i];
-
-                // Vaatame, kas oleme jõudnud uue edetabelini
-                if (osalejaKoht == 1) praeguneEdetabel++;
-
-                // Lisame massiividesse
-                if (edetabeliIndeks == praeguneEdetabel) {
-                    osalejateEdetabel = lisaMassiivi(osalejateEdetabel, osaleja);
-                    tulemusteEdetabel = lisaMassiivi(tulemusteEdetabel, tulemus);
-                }
-            }
-        }
-
-        // Lisame tagastusmassiivi
-        tagastus[0] = osalejateEdetabel;
-        tagastus[1] = tulemusteEdetabel;
-
-        return tagastus;
-    }
-
 }
