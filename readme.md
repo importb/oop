@@ -39,10 +39,7 @@ Java programm, mis kaabitseb lehelt aktiivsete edetabelite tulemusi iga 5 minuti
 
 
 ## terminalApp
+lühikirjeldus todo. 
 
-TODO
-
-plaanis veel lisada:
-- parem dokumentatsioon, tmrw for sure.
-- klasside edasi arendamine.
-- elo system.
+Klasside ja funktsioonide info: 
+[Klassid, funktsioonid](terminalApp/README.md)
