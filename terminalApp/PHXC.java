@@ -48,7 +48,13 @@ public class PHXC {
         int id = 0;
         for (String[] osalejadEdetabelis : osalejateNimed) {
             for (String osalejaNimi : osalejadEdetabelis) {
-                Osaleja osaleja = new Osaleja(id, osalejaNimi);
+                boolean juhendaja = false;
+                if (osalejaNimi.contains("(Juh)")){
+                    juhendaja = true;
+                    osalejaNimi = osalejaNimi.substring(0, osalejaNimi.length()-6);
+                }
+
+                Osaleja osaleja = new Osaleja(id, osalejaNimi, juhendaja);
 
                 if (!osalejaJubaLisatud(osalejad, osaleja)) {
                     osalejad = lisaOsaleja(osalejad, osaleja);
@@ -95,7 +101,6 @@ public class PHXC {
                 case "1":
                     System.out.println("Millist edetabelit soovite näha?");
                     int number = Integer.parseInt(String.valueOf(sisend.nextLine()));
-
                     Edetabel edetabel = edetabelid[number - 1];
                     System.out.println(edetabel);
 
@@ -103,9 +108,22 @@ public class PHXC {
 
                 // ELO edetabel
                 case "2":
+                    System.out.println("[1] - kõik\n[2] - ilma juh.\n[3] - ainult juh.");
+                    int filterELO = Integer.parseInt(String.valueOf(sisend.nextLine()));
+
+                    System.out.println();
                     System.out.println("[ ELO ]");
                     HashMap<Integer, String> map = new HashMap<>();
                     for (Osaleja osaleja : osalejad) {
+                        // Ilma juh.
+                        if (filterELO == 2){
+                            if (osaleja.isJuhendaja()) continue;
+                        }
+                        // Ainult juh
+                        if (filterELO == 3){
+                            if (!osaleja.isJuhendaja()) continue;
+                        }
+
                         String nimi = osaleja.getNimi();
                         int ELO = osaleja.getELO();
 
@@ -127,32 +145,24 @@ public class PHXC {
 
                 // osaleja otsimine
                 case "3":
-                    System.out.print("terminalApp.Osaleja: ");
+                    System.out.print("Osaleja: ");
                     String nimi = String.valueOf(sisend.nextLine());
                     Osaleja otsitav = null;
 
                     for (Osaleja o : osalejad) {
-                        if (Objects.equals(o.getNimi(), nimi)) {
+                        if (Objects.equals(o.getRealNimi(), nimi)) {
                             otsitav = o;
                             break;
                         }
                     }
 
+                    System.out.println();
                     if (otsitav != null) {
-                        System.out.println();
-                        System.out.print(otsitav.getNimi());
-                        System.out.println(", ID: " + otsitav.getId());
-                        System.out.print("- Osaleb edetabelites: ");
-                        for (Edetabel e : otsitav.getEdetabelid()) {
-                            System.out.print("[ " + e.getNimi() + " ] ");
-                        }
-                        System.out.println();
-                        System.out.println("- ELO: " + otsitav.getELO());
-                        System.out.println("\n");
+                        System.out.println(otsitav);
                     } else {
                         System.out.println("Ei leidnud sellise nimega osalejat.");
                     }
-
+                    System.out.println();
                     break;
 
                 // exit.

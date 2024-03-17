@@ -1,5 +1,4 @@
 package terminalApp;
-
 import java.net.http.HttpResponse;
 
 
@@ -70,7 +69,13 @@ public class Parser {
 
             if (line.startsWith("<span class=\"pseudo\">")) {
                 String[] userData = line.substring(21, line.length() - 7).split("\\.");
-                osalejad[e] = lisaMassiivi(osalejad[e], userData[1].substring(1));
+
+                String osalejaNimi = userData[1].substring(1);
+                if (userData[0].equals("Juh")){
+                    osalejaNimi = userData[1].substring(1) + " (Juh)";
+                }
+
+                osalejad[e] = lisaMassiivi(osalejad[e], osalejaNimi);
             }
         }
         return osalejad;

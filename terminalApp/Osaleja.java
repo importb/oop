@@ -5,10 +5,16 @@ public class Osaleja {
     private String nimi;
     private int ELO;
     private Edetabel[] edetabelid = new Edetabel[0];
+    private boolean juhendaja;
 
-    public Osaleja(int id, String nimi) {
+    public Osaleja(int id, String nimi, boolean juhendaja) {
         this.id = id;
         this.nimi = nimi;
+        this.juhendaja = juhendaja;
+    }
+
+    public boolean isJuhendaja() {
+        return juhendaja;
     }
 
     public int getId() {
@@ -19,7 +25,19 @@ public class Osaleja {
         return ELO;
     }
 
+    /**
+     * Tagastab nime, kui juhendaja siis tagastab nimi + (Juh).
+     * Kui otsid juhendajat nime pidi ss kindlasti kasuta getRealNimi()
+     * @return nimi
+     */
     public String getNimi() {
+        if (juhendaja){
+            return nimi + " (Juh)";
+        }
+        return nimi;
+    }
+
+    public String getRealNimi() {
         return nimi;
     }
 
@@ -28,12 +46,24 @@ public class Osaleja {
     }
 
     public String toString() {
-        return nimi;
+        StringBuilder edetabelid = new StringBuilder();
+
+        for(Edetabel edetabel : this.edetabelid){
+            edetabelid.append("[ ").append(edetabel.getNimi()).append(" ] ");
+        }
+
+        return String.format(
+                """
+                %s, ID: %s
+                - Osaleb edetabelites: %s
+                - ELO: %s""",
+            getNimi(), id, edetabelid, getELO()
+        );
     }
 
     /**
      * Lisab edetabeli osaleja edetabli massiivi.
-     * @param edetabel - antud terminalApp.Edetabel
+     * @param edetabel - antud Edetabel
      */
     public void lisaEdetabelise(Edetabel edetabel) {
         Edetabel[] uus = new Edetabel[edetabelid.length + 1];

@@ -1,7 +1,5 @@
 package terminalApp;
 
-import terminalApp.Osaleja;
-
 public class Edetabel {
     private String nimi;
     private int id;
