@@ -18,8 +18,8 @@ RUN ln -fs /usr/share/zoneinfo/Europe/Tallinn /etc/localtime && \
 # liigutame õiged failid imagesse
 COPY .env /app/
 COPY Main.java /app/
-COPY ../lib/mysql-connector-j-8.0.31.jar /app/
-COPY ../lib/org.json-1.6-20240205.jar /app/
+COPY mysql-connector-j-8.0.31.jar /app/
+COPY org.json-1.6-20240205.jar /app/
 COPY build.sh /app/
 COPY run.sh /app/
 
