@@ -5,10 +5,12 @@ public class Edetabel {
     private int id;
     private Osaleja[] osalejad = new Osaleja[0];
     private float[] skoorid = new float[0];
+    private String skooriÜhik;
 
-    public Edetabel(int id, String nimi) {
+    public Edetabel(int id, String nimi, String skooriÜhik) {
         this.id = id;
         this.nimi = nimi;
+        this.skooriÜhik = skooriÜhik;
     }
 
     public int getId() {
@@ -33,7 +35,7 @@ public class Edetabel {
         // osalejad ja nende skoorid
         for (int i = 0; i < osalejad.length; i++) {
             String spaces = " ".repeat(25 - osalejad[i].getNimi().length());
-            vastus.append(String.format("%02d. %s%s%s ms\n", i + 1, osalejad[i].getNimi(), spaces, skoorid[i]));
+            vastus.append(String.format("%02d. %s%s%s%s\n", i + 1, osalejad[i].getNimi(), spaces, skoorid[i], skooriÜhik));
         }
 
         return vastus.toString();
@@ -123,7 +125,7 @@ public class Edetabel {
     }
 
     /**
-     * Leiab terminalApp.Osaleja objekti tema nime kaudu.
+     * Leiab Osaleja objekti tema nime kaudu.
      * @param osalejaNimi - antud nimi
      * @return - terminalApp.Osaleja objekt
      */
