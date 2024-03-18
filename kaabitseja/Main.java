@@ -59,12 +59,12 @@ public class Main {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public static Map<String, String> readEnvFile() {
+    public static Map<String, String> readEnvFile(String kaust) {
         Map<String, String> envMap = new HashMap<>();
         BufferedReader reader = null;
         try {
             // Read the .env file
-            reader = new BufferedReader(new FileReader(".env"));
+            reader = new BufferedReader(new FileReader(kaust + ".env"));
             String line;
             while ((line = reader.readLine()) != null) {
                 // Split the line by "=" to extract key-value pairs
@@ -89,8 +89,8 @@ public class Main {
         return envMap;
     }
 
-    public static void writeDataToDatabase(ArrayList<String> data) throws SQLException, ClassNotFoundException {
-        Map<String, String> envMap = readEnvFile();
+    public static void writeDataToDatabase(ArrayList<String> data, String kaust) throws SQLException, ClassNotFoundException {
+        Map<String, String> envMap = readEnvFile(kaust);
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -148,12 +148,16 @@ public class Main {
             
             System.out.println(päring.toString());
 
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(päring.toString());
-            
-            statement.close();
-            connection.close();
-            System.out.println("Päring õnnestus!");
+            if (addedCount == 0) {
+                System.out.println("Päring on tühi, not writing");
+            } else {
+                Statement statement = connection.createStatement();
+                statement.executeUpdate(päring.toString());
+                
+                statement.close();
+                connection.close();
+                System.out.println("Päring õnnestus!");   
+            }
         } catch (SQLException e) {
             System.out.println("SQL exception!");
             e.printStackTrace();   
@@ -166,6 +170,14 @@ public class Main {
     public static void main(String[] args) throws Exception {
         HttpResponse<String> unparsedData = scrapeWebsite("http://www.phxc.ee");
         String[] bodyData = unparsedData.body().replace("\t", "").split("\n");
+
+        String kaust;
+        if (args != null && args.length > 0) {
+            kaust = args[0];
+        } else {
+            kaust = "./";
+        }
+
 
         // Massiivid osalejate ja skooride jaoks
         String[] osalejad = new String[0];
@@ -207,14 +219,6 @@ public class Main {
                 // edetabeli id.
                 if (Integer.parseInt(osalejaNr) == 1) edetabel++;
 
-                // niisama jooksutades hoiame relatiivset failipathi, cronis anname talle /app/ kausta ette
-                String kaust;
-                if (args != null && args.length > 0) {
-                    kaust = args[0];
-                } else {
-                    kaust = "./";
-                }
-
                 // ava fail kirjutamiseks
                 File fail = new File(kaust + "data_" + now + ".txt");
                 FileWriter kirjutaja = new FileWriter(fail, true);
@@ -238,6 +242,6 @@ public class Main {
         }
         System.out.println("Kirjutatud faili!");
 
-        writeDataToDatabase(JSONdata);
+        writeDataToDatabase(JSONdata, kaust);
     }
 }

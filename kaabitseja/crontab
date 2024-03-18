@@ -1,1 +1,1 @@
-*/5 * * * * /usr/bin/java -cp "/app/:/app/mysql-connector-j-8.0.31.jar:/app/org.json-1.6-20240205.jar" Main "/app/data/" >> /var/log/cron.log 2>&1
+*/5 * * * * /usr/bin/java -cp "/app/:/app/mysql-connector-j-8.0.31.jar:/app/org.json-1.6-20240205.jar" Main "/app/" >> /var/log/cron.log 2>&1
