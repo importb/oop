@@ -6,29 +6,31 @@ import java.util.*;
 public class PHXC {
     /**
      * ELO edetabeli koostamine
-     * @param id - edetabeli id
+     *
+     * @param id       - edetabeli id
      * @param osalejad - osalejate massiiv
      * @return - ELO edetabel
      */
     public static Edetabel koostaELOEdetabel(int id, Osaleja[] osalejad) {
-        HashMap<Integer, String> ELOMap = new HashMap<>();
+        int[][] sortimiseks = new int[osalejad.length][2];
         Edetabel ELOedetabel = new Edetabel(id, "ELO", "p");
+
+        int i = 0;
         for (Osaleja osaleja : osalejad) {
             osaleja.arvutaELO();
 
-            ELOMap.put(osaleja.getELO(), osaleja.getNimi());
+            sortimiseks[i][1] = osaleja.getELO();
+            sortimiseks[i][0] = osaleja.getId();
+            i++;
         }
-        Map<Integer, String> ELOtreeMap = new TreeMap<>(ELOMap);
-        Object[] ELOd = ELOtreeMap.keySet().toArray();
-        Object[] nimed = ELOtreeMap.entrySet().toArray();
+        Arrays.sort(sortimiseks, Comparator.comparingInt(a -> a[1]));
 
-        for (int j = ELOd.length - 1; j >= 0; j--) {
-            String nimi = String.valueOf(nimed[j]).split("=")[1];
-
+        for (int j = sortimiseks.length - 1; j >= 0; j--) {
             for (Osaleja osaleja : osalejad) {
-                if (osaleja.getNimi().equals(nimi)) {
+                if (osaleja.getId() == sortimiseks[j][0]) {
                     ELOedetabel.lisaOsaleja(osaleja);
-                    ELOedetabel.lisaSkoor(Float.parseFloat(String.valueOf(ELOd[j])));
+                    ELOedetabel.lisaSkoor(sortimiseks[j][1]);
+                    osaleja.lisaEdetabelise(ELOedetabel);
                 }
             }
         }

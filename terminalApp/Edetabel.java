@@ -1,11 +1,11 @@
 package terminalApp;
 
 public class Edetabel {
-    private String nimi;
-    private int id;
+    private final String nimi;
+    private final int id;
     private Osaleja[] osalejad = new Osaleja[0];
     private float[] skoorid = new float[0];
-    private String skooriÜhik;
+    private final String skooriÜhik;
 
     public Edetabel(int id, String nimi, String skooriÜhik) {
         this.id = id;
@@ -45,13 +45,14 @@ public class Edetabel {
     /**
      * Lisab osaleja selle edetabeli osalejate massiivi, kui teda veel ei ole lisatud.
      * Ehk sama nimega osalejaid ei saa olla.
+     *
      * @param osaleja - antud terminalApp.Osaleja
      */
     public void lisaOsaleja(Osaleja osaleja) {
         boolean jubaOlemas = false;
 
-        for(Osaleja o : osalejad) {
-            if (o.getNimi().equals(osaleja.getNimi())){
+        for (Osaleja o : osalejad) {
+            if (o.getNimi().equals(osaleja.getNimi())) {
                 jubaOlemas = true;
                 break;
             }
@@ -69,6 +70,7 @@ public class Edetabel {
     /**
      * Lisab skoori selle edetabeli skooridesse.
      * Otseselt ei seosta seda terminalApp.Osaleja objektiga, selle jaoks kasutada leiaOsalejaSkoor()
+     *
      * @param skoor - antud skoor.
      */
     public void lisaSkoor(float skoor) {
@@ -81,14 +83,15 @@ public class Edetabel {
 
     /**
      * Leiab osaleja skoori tema Osaleja objekti järgi.
+     *
      * @param osaleja - antud Osaleja
      * @return skoor selles edetabelis, juhul kui puudub siis tagastab null.
      */
     public Float leiaOsalejaSkoor(Osaleja osaleja) {
         int i = 0;
         boolean leitud = false;
-        for(Osaleja o : osalejad){
-            if (o.getNimi().equals(osaleja.getNimi())){
+        for (Osaleja o : osalejad) {
+            if (o.getNimi().equals(osaleja.getNimi())) {
                 leitud = true;
                 break;
             }
@@ -97,26 +100,27 @@ public class Edetabel {
 
         if (leitud) {
             return skoorid[i];
-        }else{
+        } else {
             return null;
         }
     }
 
     /**
      * Leiab osaleja koha edetabelis.
+     *
      * @param osaleja - antud Osaleja
-     * @param type - mis tüüpi edetabelit vaatame, 0 - kõik koos, 1 - ilma juhendajateta, 2 - ainult juhendajad.
+     * @param type    - mis tüüpi edetabelit vaatame, 0 - kõik koos, 1 - ilma juhendajateta, 2 - ainult juhendajad.
      * @return - osaleja koht.
      */
     public Integer leiaOsalejaKoht(Osaleja osaleja, int type) {
         int i = 0;
-        for(Osaleja o : osalejad){
+        for (Osaleja o : osalejad) {
             // Ilma juh.
             if (type == 1) if (o.isJuhendaja()) i--;
             // Ainult juh
             if (type == 2) if (!o.isJuhendaja()) i--;
 
-            if (o.getNimi().equals(osaleja.getNimi())){
+            if (o.getNimi().equals(osaleja.getNimi())) {
                 return i;
             }
             i++;
@@ -126,6 +130,7 @@ public class Edetabel {
 
     /**
      * Leiab Osaleja objekti tema nime kaudu.
+     *
      * @param osalejaNimi - antud nimi
      * @return - terminalApp.Osaleja objekt
      */

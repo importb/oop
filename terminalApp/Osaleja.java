@@ -1,11 +1,12 @@
 package terminalApp;
 
 public class Osaleja {
-    private int id;
-    private String nimi;
+    private final int id;
+    private final String nimi;
+    private final boolean juhendaja;
     private int ELO;
     private Edetabel[] edetabelid = new Edetabel[0];
-    private boolean juhendaja;
+
 
     public Osaleja(int id, String nimi, boolean juhendaja) {
         this.id = id;
@@ -28,10 +29,11 @@ public class Osaleja {
     /**
      * Tagastab nime, kui juhendaja siis tagastab nimi + (Juh).
      * Kui otsid juhendajat nime pidi ss kindlasti kasuta getRealNimi()
+     *
      * @return nimi
      */
     public String getNimi() {
-        if (juhendaja){
+        if (juhendaja) {
             return nimi + " (Juh)";
         }
         return nimi;
@@ -54,7 +56,7 @@ public class Osaleja {
         StringBuilder kohad = new StringBuilder();
         StringBuilder kohadEri = new StringBuilder();
 
-        for(Edetabel edetabel : this.edetabelid){
+        for (Edetabel edetabel : this.edetabelid) {
             // Edetabelite nimed
             edetabelid.append("[ ").append(edetabel.getNimi()).append(" ] ");
 
@@ -69,7 +71,7 @@ public class Osaleja {
             kohad.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 0) + 1));
 
             // Juhendaja vaba edetabeli kohad ja keskmine koht
-            if (!juhendaja){
+            if (!juhendaja) {
                 erikohtadeSumma += edetabel.leiaOsalejaKoht(this, 1) + 1;
                 kohadEri.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 1) + 1));
             }
@@ -83,25 +85,30 @@ public class Osaleja {
         String eriKohadeTekst = "ilma juh. :";
         if (juhendaja) eriKohadeTekst = "juh. :     ";
 
+        int ELOkoht = this.edetabelid[this.edetabelid.length - 1].leiaOsalejaKoht(this, 0) + 1;
+
+
         return String.format(
                 """
-                %s, ID: %s
-                - Osaleb edetabelites:    %s
-                - Tulemused:              %s
-                
-                - Kohad:                  %s
-                - Keskmine koht:          %s.
-                
-                - Kohad %s       %s
-                - Keskmine koht:          %s.
-                
-                - ELO:                    %s""",
-            getNimi(), id, edetabelid, tulemused, kohad, kohtadeSumma / tulemusiKokku, eriKohadeTekst, kohadEri, erikohtadeSumma / tulemusiKokku, getELO()
+                        %s, ID: %s
+                        - Osaleb edetabelites:    %s
+                        - Tulemused:              %s
+                                
+                        - Kohad:                  %s
+                        - Keskmine koht:          %s.
+                                        
+                        - Kohad %s       %s
+                        - Keskmine koht:          %s.
+                                        
+                        - ELO:                    %s
+                        - ELO koht:               %s.""",
+                getNimi(), id, edetabelid, tulemused, kohad, kohtadeSumma / tulemusiKokku, eriKohadeTekst, kohadEri, erikohtadeSumma / tulemusiKokku, getELO(), ELOkoht
         );
     }
 
     /**
      * Lisab edetabeli osaleja edetabli massiivi.
+     *
      * @param edetabel - antud Edetabel
      */
     public void lisaEdetabelise(Edetabel edetabel) {
