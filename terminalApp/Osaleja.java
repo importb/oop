@@ -58,27 +58,30 @@ public class Osaleja {
 
         for (Edetabel edetabel : this.edetabelid) {
             // Edetabelite nimed
-            edetabelid.append("[ ").append(edetabel.getNimi()).append(" ] ");
+            if (!edetabel.getNimi().equals("ELO")) {
+                edetabelid.append("[ ").append(edetabel.getNimi()).append(" ] ");
 
-            // Keskmise koha arvutamine (peamine edetabel)
-            kohtadeSumma += edetabel.leiaOsalejaKoht(this, 0) + 1;
-            tulemusiKokku++;
 
-            // Edetabeli skoor osalejal
-            tulemused.append(String.format("[ %s ms ] ", edetabel.leiaOsalejaSkoor(this) + 1));
+                // Keskmise koha arvutamine (peamine edetabel)
+                kohtadeSumma += edetabel.leiaOsalejaKoht(this, 0) + 1;
+                tulemusiKokku++;
 
-            // Edetabeli koht osalejal (peamine edetabel)
-            kohad.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 0) + 1));
+                // Edetabeli skoor osalejal
+                tulemused.append(String.format("[ %s ms ] ", edetabel.leiaOsalejaSkoor(this) + 1));
 
-            // Juhendaja vaba edetabeli kohad ja keskmine koht
-            if (!juhendaja) {
-                erikohtadeSumma += edetabel.leiaOsalejaKoht(this, 1) + 1;
-                kohadEri.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 1) + 1));
-            }
-            // Juhendajate edetabeli koht ja keskmine koht
-            if (juhendaja) {
-                erikohtadeSumma += edetabel.leiaOsalejaKoht(this, 2) + 1;
-                kohadEri.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 2) + 1));
+                // Edetabeli koht osalejal (peamine edetabel)
+                kohad.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 0) + 1));
+
+                // Juhendaja vaba edetabeli kohad ja keskmine koht
+                if (!juhendaja) {
+                    erikohtadeSumma += edetabel.leiaOsalejaKoht(this, 1) + 1;
+                    kohadEri.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 1) + 1));
+                }
+                // Juhendajate edetabeli koht ja keskmine koht
+                if (juhendaja) {
+                    erikohtadeSumma += edetabel.leiaOsalejaKoht(this, 2) + 1;
+                    kohadEri.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 2) + 1));
+                }
             }
         }
 
