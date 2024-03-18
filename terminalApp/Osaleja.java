@@ -61,7 +61,6 @@ public class Osaleja {
             if (!edetabel.getNimi().equals("ELO")) {
                 edetabelid.append("[ ").append(edetabel.getNimi()).append(" ] ");
 
-
                 // Keskmise koha arvutamine (peamine edetabel)
                 kohtadeSumma += edetabel.leiaOsalejaKoht(this, 0) + 1;
                 tulemusiKokku++;
