@@ -5,6 +5,21 @@ import java.util.*;
 
 public class PHXC {
     /**
+     * Kontrollib kas sõne on number või ei.
+     * @param str - antud sõne
+     * @return - true/false põhinedes sellel kas sõne on number.
+     */
+    public static boolean kasOnNumber(String str) {
+        if (str == null) return false;
+        try {
+            double a = Double.parseDouble(str);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * ELO edetabeli koostamine
      *
      * @param id       - edetabeli id
@@ -136,10 +151,28 @@ public class PHXC {
             switch (tekst) {
                 // edetabeli näitamine
                 case "1":
-                    System.out.println("Millist edetabelit soovite näha?");
-                    int number = Math.max(1, Math.min(edetabelid.length, Integer.parseInt(String.valueOf(sisend.nextLine()))));
-                    Edetabel edetabel = edetabelid[number - 1];
-                    System.out.println(edetabel);
+                    System.out.println("Millist edetabelit soovite näha? (id / nimi)");
+                    String case1antud = sisend.nextLine();
+
+                    Edetabel edetabel = null;
+
+                    if (kasOnNumber(case1antud)) {
+                        int number = Math.max(1, Math.min(edetabelid.length, Integer.parseInt(case1antud)));
+                        edetabel = edetabelid[number - 1];
+                    }else{
+                        for(Edetabel e : edetabelid) {
+                            if (e.getNimi().equals(case1antud)) {
+                                edetabel = e;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (edetabel != null){
+                        System.out.println(edetabel);
+                    }else{
+                        System.out.println("Sellise nimega edetabelit ei leitud.");
+                    }
                     break;
 
                 // ELO edetabel
@@ -149,12 +182,12 @@ public class PHXC {
 
                 // osaleja otsimine
                 case "3":
-                    System.out.print("Osaleja: ");
-                    String nimi = String.valueOf(sisend.nextLine());
+                    System.out.print("Osaleja nimi: ");
+                    String nimi = String.valueOf(sisend.nextLine()).toLowerCase();
                     Osaleja otsitav = null;
 
                     for (Osaleja o : osalejad) {
-                        if (Objects.equals(o.getRealNimi(), nimi)) {
+                        if (Objects.equals(o.getRealNimi().toLowerCase(), nimi)) {
                             otsitav = o;
                             break;
                         }

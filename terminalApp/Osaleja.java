@@ -59,14 +59,31 @@ public class Osaleja {
         for (Edetabel edetabel : this.edetabelid) {
             // Edetabelite nimed
             if (!edetabel.getNimi().equals("ELO")) {
-                edetabelid.append("[ ").append(edetabel.getNimi()).append(" ] ");
+                edetabelid.append("\n  [ ").append(edetabel.getNimi()).append(" ] ");
 
                 // Keskmise koha arvutamine (peamine edetabel)
                 kohtadeSumma += edetabel.leiaOsalejaKoht(this, 0) + 1;
                 tulemusiKokku++;
 
                 // Edetabeli skoor osalejal
-                tulemused.append(String.format("[ %s ms ] ", edetabel.leiaOsalejaSkoor(this) + 1));
+                if (edetabel.leiaOsalejaKoht(this, 0) == 0){
+                    String tekst = String.format("\n  %s ms", edetabel.leiaOsalejaSkoor(this));
+                    String vahed = " ".repeat(16 - tekst.length());
+                    String tekstFinal = tekst + vahed + "(Parim tulemus edetabelis!)";
+
+                    tulemused.append(tekstFinal);
+                }else {
+                    Osaleja esimene = edetabel.getOsalejad()[0];
+                    float osalejaSkoor = edetabel.leiaOsalejaSkoor(this);
+                    float parimTulemus = edetabel.leiaOsalejaSkoor(esimene);
+                    float aeglasemProtsent = (osalejaSkoor / parimTulemus) * 100;
+
+                    String tekst = String.format("\n  %s ms", osalejaSkoor);
+                    String vahed = " ".repeat(16 - tekst.length());
+                    String tekstFinal = tekst + vahed + "(Parim: " + parimTulemus + " ms, " + (int)aeglasemProtsent + "% kiirem)";
+
+                    tulemused.append(tekstFinal);
+                }
 
                 // Edetabeli koht osalejal (peamine edetabel)
                 kohad.append(String.format("[ %s. ] ", edetabel.leiaOsalejaKoht(this, 0) + 1));
@@ -85,7 +102,7 @@ public class Osaleja {
         }
 
         String eriKohadeTekst = "ilma juh. :";
-        if (juhendaja) eriKohadeTekst = "juh. :     ";
+        if (juhendaja) eriKohadeTekst = "juh. :";
 
         int ELOkoht = this.edetabelid[this.edetabelid.length - 1].leiaOsalejaKoht(this, 0) + 1;
 
@@ -93,18 +110,19 @@ public class Osaleja {
         return String.format(
                 """
                         %s, ID: %s
-                        - Osaleb edetabelites:    %s
-                        - Tulemused:              %s
+                        - Osaleb edetabelites : %s
+                        
+                        - Tulemused : %s
                                 
-                        - Kohad:                  %s
-                        - Keskmine koht:          %s.
+                        - Kohad : (Keskmine koht: %s.)
+                          %s
                                         
-                        - Kohad %s       %s
-                        - Keskmine koht:          %s.
+                        - Kohad %s (Keskmine koht: %s.)
+                          %s
                                         
-                        - ELO:                    %s
-                        - ELO koht:               %s.""",
-                getNimi(), id, edetabelid, tulemused, kohad, kohtadeSumma / tulemusiKokku, eriKohadeTekst, kohadEri, erikohtadeSumma / tulemusiKokku, getELO(), ELOkoht
+                        - ELO :
+                          %s. %.1fp""",
+                getNimi(), id, edetabelid, tulemused, kohtadeSumma / tulemusiKokku, kohad, eriKohadeTekst, erikohtadeSumma / tulemusiKokku, kohadEri, ELOkoht, (float)getELO()
         );
     }
 
