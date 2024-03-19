@@ -12,12 +12,15 @@
     String nimi             // edetabeli nimi
     Osaleja[] osalejad      // edetabelis olevate osalejate objektid.
     float[] skoorid         // osalejate skoorid. Kui osaleja on massiivis 3. kohal siis tema skoor on ka 3. kohal.
+    String skooriÜhik       // skoori ühik, (ms, p, ...)
 </pre>
 
 ## Funktsioonid:
 - **PHXC.java (peamine klass)**
     - `osalejaJubaLisatud(Osaleja[] osalejad, Osaleja osaleja)` : tagastab true/false põhinedes sellel kas osaleja objekt on juba lisatud massiivi.
     - `lisaOsaleja(Osaleja[] osalejad, Osaleja osaleja)` : lisab Osaleja objekti osalejate massiivi. NB! tagastab uue massiivi.
+    - `koostaELOEdetabel(int id, Osaleja[] osalejad)` : koostab ELOedetabeli
+    - `kasOnNumber(String str)` : kontrollib kas antud sõne on number või mitte.
  
       
 - **Scraper.java**
