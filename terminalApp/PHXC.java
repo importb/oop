@@ -27,7 +27,7 @@ public class PHXC {
      * @return - ELO edetabel
      */
     public static Edetabel koostaELOEdetabel(int id, Osaleja[] osalejad) {
-        int[][] sortimiseks = new int[osalejad.length][2];
+        float[][] sortimiseks = new float[osalejad.length][2];
         Edetabel ELOedetabel = new Edetabel(id, "ELO", "p");
 
         int i = 0;
@@ -38,7 +38,7 @@ public class PHXC {
             sortimiseks[i][0] = osaleja.getId();
             i++;
         }
-        Arrays.sort(sortimiseks, Comparator.comparingInt(a -> a[1]));
+        Arrays.sort(sortimiseks, Comparator.comparingDouble(a -> a[1]));
 
         for (int j = sortimiseks.length - 1; j >= 0; j--) {
             for (Osaleja osaleja : osalejad) {
