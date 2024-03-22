@@ -86,16 +86,16 @@ public class PHXC {
     }
 
     public static void main(String[] args) throws Exception {
-        // scrape website
+        // kaabitse lehekülge
         HttpResponse<String> unparsedData = Scraper.scrapeWebsite("http://www.phxc.ee");
 
-        // Massiivid
+        // Massiivide ülesseadistus.
         String[][] osalejateNimed = Parser.leiaOsalejad(unparsedData);
         String[][] osalejateSkoorid = Parser.leiaTulemused(unparsedData);
         String[] edetabeliNimed = Parser.leiaEdetabeliNimed(unparsedData);
         Edetabel[] edetabelid = new Edetabel[edetabeliNimed.length];
 
-        // Koosta igale osalejale oma klass ja lisa osalejate massiivi.
+        // Koosta igale osalejale oma objekt ja lisa osalejate massiivi.
         Osaleja[] osalejad = new Osaleja[0];
         int id = 0;
         for (String[] osalejadEdetabelis : osalejateNimed) {
