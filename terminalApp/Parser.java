@@ -110,10 +110,42 @@ public class Parser {
                 String skoor = line.substring(20, line.length() - 7)
                         .replace("<span class=\"komakoht\">", "")
                         .replace("</span>", "")
-                        .split("ms")[0];
+                        .split(" ")[0];
                 skoorid[e] = lisaMassiivi(skoorid[e], skoor);
             }
         }
         return skoorid;
+    }
+
+    public static String[][] leiaSkooriÜhikud(HttpResponse<String> data) {
+        // muuda pikk jada teksti massiiviks ridade põhjal.
+        String[] dataArr = data.body().replace("\t", "").split("\n");
+
+        // leia mitu edetabelit on ja koosta kaherealine massiiv
+        int edetabeleid = 0;
+        for (String line : dataArr) {
+            if (line.startsWith("<h1>")) {
+                edetabeleid++;
+            }
+        }
+        String[][] skooriühikud = new String[edetabeleid][0];
+
+        // Lisa massiivi
+        int e = -1;
+        for (String line : dataArr) {
+            if (line.startsWith("<h1>")) {
+                e++;
+            }
+
+            if (line.startsWith("<span class=\"skoor\">")) {
+                String skooriühik = line.substring(20, line.length() - 7)
+                        .replace("<span class=\"komakoht\">", "")
+                        .replace("</span>", "")
+                        .split(" ")[1];
+
+                skooriühikud[e] = lisaMassiivi(skooriühikud[e], skooriühik);
+            }
+        }
+        return skooriühikud;
     }
 }

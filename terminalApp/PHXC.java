@@ -6,6 +6,7 @@ import java.util.*;
 public class PHXC {
     /**
      * Kontrollib kas sõne on number või ei.
+     *
      * @param str - antud sõne
      * @return - true/false põhinedes sellel kas sõne on number.
      */
@@ -92,6 +93,7 @@ public class PHXC {
         // Massiivide ülesseadistus.
         String[][] osalejateNimed = Parser.leiaOsalejad(unparsedData);
         String[][] osalejateSkoorid = Parser.leiaTulemused(unparsedData);
+        String[][] edetabeliteSkooriühikud = Parser.leiaSkooriÜhikud(unparsedData);
         String[] edetabeliNimed = Parser.leiaEdetabeliNimed(unparsedData);
         Edetabel[] edetabelid = new Edetabel[edetabeliNimed.length];
 
@@ -119,7 +121,7 @@ public class PHXC {
         // Koosta edetabeli klassid ja lisa osalejad sinna.
         int i = 0;
         for (String edetabeliNimi : edetabeliNimed) {
-            Edetabel edetabel = new Edetabel(i, edetabeliNimi, "ms");
+            Edetabel edetabel = new Edetabel(i, edetabeliNimi, edetabeliteSkooriühikud[i][0]);
 
             for (String osalejaNimi : osalejateNimed[i]) {
                 for (Osaleja osaleja : osalejad) {
@@ -159,8 +161,8 @@ public class PHXC {
                     if (kasOnNumber(case1antud)) {
                         int number = Math.max(1, Math.min(edetabelid.length, Integer.parseInt(case1antud)));
                         edetabel = edetabelid[number - 1];
-                    }else{
-                        for(Edetabel e : edetabelid) {
+                    } else {
+                        for (Edetabel e : edetabelid) {
                             if (e.getNimi().equals(case1antud)) {
                                 edetabel = e;
                                 break;
@@ -168,9 +170,9 @@ public class PHXC {
                         }
                     }
 
-                    if (edetabel != null){
+                    if (edetabel != null) {
                         System.out.println(edetabel);
-                    }else{
+                    } else {
                         System.out.println("Sellise nimega edetabelit ei leitud.");
                     }
                     break;

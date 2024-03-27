@@ -34,8 +34,14 @@ public class Edetabel {
 
         // osalejad ja nende skoorid
         for (int i = 0; i < osalejad.length; i++) {
+            String skoor = String.format("%.2f", skoorid[i]);
+
+            if (Float.parseFloat(skoor.split("\\.")[1]) == 0){
+                skoor = skoor.split("\\.")[0];
+            }
+
             String spaces = " ".repeat(34 - String.format("%02d. %s", i + 1, osalejad[i].getNimi()).length());
-            vastus.append(String.format("%02d. %s%s%.2f%s\n", i + 1, osalejad[i].getNimi(), spaces, skoorid[i], skooriÜhik));
+            vastus.append(String.format("%02d. %s%s%s%s\n", i + 1, osalejad[i].getNimi(), spaces, skoor, skooriÜhik));
         }
 
         return vastus.toString();
