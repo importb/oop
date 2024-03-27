@@ -225,12 +225,13 @@ public class Main {
 
                 // vormista JSON
                 String JSON = String.format(
-                        "{\"timestamp\":\"%s\", \"edetabel_id\":%s, \"edetabel_nimi\":\"%s\",\"osaleja\":\"%s\", \"skoor\":%s}",
+                        "{\"timestamp\":\"%s\", \"edetabel_id\":%s, \"edetabel_nimi\":\"%s\", \"osaleja\":\"%s\", \"skoor\":%s, \"skooriühik\":\"%s\"}",
                         now,
                         edetabel,
                         edetabelid[edetabel - 1],
                         osaleja.split("\\.")[1].substring(1),
-                        Float.parseFloat(skoor.substring(0, skoor.length() - 3))
+                        Float.parseFloat(skoor.substring(0, skoor.length() - 3)),
+                        skoor.split(" ")[1]
                 );
 
                 JSONdata.add(JSON);
