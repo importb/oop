@@ -121,7 +121,12 @@ public class PHXC {
         // Koosta edetabeli klassid ja lisa osalejad sinna.
         int i = 0;
         for (String edetabeliNimi : edetabeliNimed) {
-            Edetabel edetabel = new Edetabel(i, edetabeliNimi, edetabeliteSkooriühikud[i][0]);
+            // Leia edetabeli skooriühik
+            String skooriühik = edetabeliteSkooriühikud[i][0];
+
+
+            // Koosta edetabel
+            Edetabel edetabel = new Edetabel(i, edetabeliNimi, skooriühik);
 
             for (String osalejaNimi : osalejateNimed[i]) {
                 for (Osaleja osaleja : osalejad) {

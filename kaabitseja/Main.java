@@ -223,6 +223,13 @@ public class Main {
                 File fail = new File(kaust + "data_" + now + ".txt");
                 FileWriter kirjutaja = new FileWriter(fail, true);
 
+                // leia skooriühik
+                String skooriühik = "";
+
+                if (skoor.split(" ").length > 1) {
+                    skooriühik = skoor.split(" ")[1];
+                }
+
                 // vormista JSON
                 String JSON = String.format(
                         "{\"timestamp\":\"%s\", \"edetabel_id\":%s, \"edetabel_nimi\":\"%s\", \"osaleja\":\"%s\", \"skoor\":%s, \"skooriühik\":\"%s\"}",
@@ -231,7 +238,7 @@ public class Main {
                         edetabelid[edetabel - 1],
                         osaleja.split("\\.")[1].substring(1),
                         Float.parseFloat(skoor.substring(0, skoor.length() - 3)),
-                        skoor.split(" ")[1]
+                        skooriühik
                 );
 
                 JSONdata.add(JSON);

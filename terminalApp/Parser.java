@@ -138,10 +138,15 @@ public class Parser {
             }
 
             if (line.startsWith("<span class=\"skoor\">")) {
-                String skooriühik = line.substring(20, line.length() - 7)
+                String s = line.substring(20, line.length() - 7)
                         .replace("<span class=\"komakoht\">", "")
-                        .replace("</span>", "")
-                        .split(" ")[1];
+                        .replace("</span>", "");
+
+                String skooriühik = "";
+
+                if (s.split(" ").length > 1) {
+                    skooriühik = s.split(" ")[1];
+                }
 
                 skooriühikud[e] = lisaMassiivi(skooriühikud[e], skooriühik);
             }

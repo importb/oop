@@ -1,5 +1,7 @@
 package terminalApp;
 
+import java.util.Locale;
+
 public class Edetabel {
     private final String nimi;
     private final int id;
@@ -29,12 +31,17 @@ public class Edetabel {
         return skoorid;
     }
 
+    public String getSkooriÜhik() {
+        return skooriÜhik;
+    }
+
     public String toString() {
         StringBuilder vastus = new StringBuilder("[ " + nimi + " ]\n");
 
         // osalejad ja nende skoorid
         for (int i = 0; i < osalejad.length; i++) {
-            String skoor = String.format("%.2f", skoorid[i]);
+            // Locale.US, et kasutaks koma asemel punkti.
+            String skoor = String.format(Locale.US, "%.2f", skoorid[i]);
 
             if (Float.parseFloat(skoor.split("\\.")[1]) == 0){
                 skoor = skoor.split("\\.")[0];

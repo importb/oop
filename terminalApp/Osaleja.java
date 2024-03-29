@@ -67,7 +67,7 @@ public class Osaleja {
 
                 // Edetabeli skoor osalejal
                 if (edetabel.leiaOsalejaKoht(this, 0) == 0) {
-                    String tekst = String.format("\n  %s ms", edetabel.leiaOsalejaSkoor(this));
+                    String tekst = String.format("\n  %s %s", edetabel.leiaOsalejaSkoor(this), edetabel.getSkooriÜhik());
                     String vahed = " ".repeat(16 - tekst.length());
                     String tekstFinal = tekst + vahed + "(Parim tulemus edetabelis!)";
 
@@ -78,9 +78,9 @@ public class Osaleja {
                     float parimTulemus = edetabel.leiaOsalejaSkoor(esimene);
                     float aeglasemProtsent = (osalejaSkoor / parimTulemus) * 100;
 
-                    String tekst = String.format("\n  %s ms", osalejaSkoor);
+                    String tekst = String.format("\n  %s %s", osalejaSkoor, edetabel.getSkooriÜhik());
                     String vahed = " ".repeat(16 - tekst.length());
-                    String tekstFinal = tekst + vahed + "(Parim: " + parimTulemus + " ms, " + (int) aeglasemProtsent + "% kiirem)";
+                    String tekstFinal = tekst + vahed + "(Parim: " + parimTulemus + " " + edetabel.getSkooriÜhik() + ", " + (int) aeglasemProtsent + "% parem)";
 
                     tulemused.append(tekstFinal);
                 }
