@@ -1,13 +1,13 @@
 package terminalApp;
 
-import java.util.Locale;
+import java.util.List;
 
 public class Edetabel {
     private final String nimi;
     private final int id;
-    private Osaleja[] osalejad = new Osaleja[0];
-    private float[] skoorid = new float[0];
     private final String skooriÜhik;
+    private List<String> osalejad;
+    private List<String> tulemused;
 
     public Edetabel(int id, String nimi, String skooriÜhik) {
         this.id = id;
@@ -15,145 +15,104 @@ public class Edetabel {
         this.skooriÜhik = skooriÜhik;
     }
 
-    public int getId() {
-        return id;
+    public void setOsalejad(List<String> osalejad) {
+        this.osalejad = osalejad;
+    }
+
+    public void setTulemused(List<String> tulemused) {
+        this.tulemused = tulemused;
     }
 
     public String getNimi() {
         return nimi;
     }
 
-    public Osaleja[] getOsalejad() {
-        return osalejad;
-    }
-
-    public float[] getSkoorid() {
-        return skoorid;
-    }
-
     public String getSkooriÜhik() {
         return skooriÜhik;
     }
 
+    public List<String> getOsalejad() {
+        return osalejad;
+    }
+
+
+    /**
+     * Leiab osaleja objekti nime kaudu
+     * @param nimi - antud nimi
+     * @return - osaleja objekt
+     */
+    public int leiaOsalejaKoht(String nimi) {
+        int i = 0;
+        for (String osaleja : osalejad) {
+            if (osaleja.split(" ")[0].equals(nimi)) {
+                break;
+            }
+            i++;
+        }
+
+        return i;
+    }
+
+    /**
+     * Leiab osaleja objekti nime kaudu (ilma juhendajadeta)
+     * @param nimi - antud nimi
+     * @return - osaleja objekt
+     */
+    public int leiaOsalejaKohtIlmaJuh(String nimi) {
+        int i = 0;
+        for (String osaleja : osalejad) {
+            if (osaleja.contains("(Juh)")) continue;
+
+            if (osaleja.equals(nimi)) {
+                break;
+            }
+            i++;
+        }
+
+        return i;
+    }
+
+    /**
+     * Leiab osaleja objekti nime kaudu (ainult juhendajad)
+     * @param nimi - antud nimi
+     * @return - osaleja objekt
+     */
+    public int leiaOsalejaKohtJuh(String nimi) {
+        int i = 0;
+        for (String osaleja : osalejad) {
+
+            if (osaleja.endsWith("(Juh)")){
+                if (osaleja.contains(nimi)) break;
+                i++;
+            }
+        }
+        return i;
+    }
+
+    public String leiaOsalejaTulemus(String nimi) {
+        int i = leiaOsalejaKoht(nimi);
+
+        return tulemused.get(i);
+    }
+
+    public String leiaOsalejaTulemus(int koht) {
+        return tulemused.get(koht);
+    }
+
+
     public String toString() {
-        StringBuilder vastus = new StringBuilder("[ " + nimi + " ]\n");
+        StringBuilder info = new StringBuilder();
 
-        // osalejad ja nende skoorid
-        for (int i = 0; i < osalejad.length; i++) {
-            // Locale.US, et kasutaks koma asemel punkti.
-            String skoor = String.format(Locale.US, "%.2f", skoorid[i]);
-
-            if (Float.parseFloat(skoor.split("\\.")[1]) == 0){
-                skoor = skoor.split("\\.")[0];
-            }
-
-            String spaces = " ".repeat(34 - String.format("%02d. %s", i + 1, osalejad[i].getNimi()).length());
-            vastus.append(String.format("%02d. %s%s%s%s\n", i + 1, osalejad[i].getNimi(), spaces, skoor, skooriÜhik));
+        for (int i = 0; i < osalejad.size(); i++) {
+            String tühikuid = " ".repeat(30 - ((i + 1) + osalejad.get(i)).length());
+            info.append(String.format("%s. %s%s%s%s\n", i + 1, osalejad.get(i), tühikuid, tulemused.get(i), skooriÜhik));
         }
 
-        return vastus.toString();
+        return String.format(
+                """
+                        [ %s ] [id : %s]
+                        %s
+                        """,
+                nimi, id, info);
     }
-
-
-    /**
-     * Lisab osaleja selle edetabeli osalejate massiivi, kui teda veel ei ole lisatud.
-     * Ehk sama nimega osalejaid ei saa olla.
-     *
-     * @param osaleja - antud terminalApp.Osaleja
-     */
-    public void lisaOsaleja(Osaleja osaleja) {
-        boolean jubaOlemas = false;
-
-        for (Osaleja o : osalejad) {
-            if (o.getNimi().equals(osaleja.getNimi())) {
-                jubaOlemas = true;
-                break;
-            }
-        }
-
-        if (!jubaOlemas) {
-            Osaleja[] uus = new Osaleja[osalejad.length + 1];
-            System.arraycopy(osalejad, 0, uus, 0, osalejad.length);
-            uus[uus.length - 1] = osaleja;
-            this.osalejad = uus;
-        }
-    }
-
-
-    /**
-     * Lisab skoori selle edetabeli skooridesse.
-     * Otseselt ei seosta seda terminalApp.Osaleja objektiga, selle jaoks kasutada leiaOsalejaSkoor()
-     *
-     * @param skoor - antud skoor.
-     */
-    public void lisaSkoor(float skoor) {
-        float[] uus = new float[skoorid.length + 1];
-        System.arraycopy(skoorid, 0, uus, 0, skoorid.length);
-        uus[uus.length - 1] = skoor;
-        this.skoorid = uus;
-    }
-
-
-    /**
-     * Leiab osaleja skoori tema Osaleja objekti järgi.
-     *
-     * @param osaleja - antud Osaleja
-     * @return skoor selles edetabelis, juhul kui puudub siis tagastab null.
-     */
-    public Float leiaOsalejaSkoor(Osaleja osaleja) {
-        int i = 0;
-        boolean leitud = false;
-        for (Osaleja o : osalejad) {
-            if (o.getNimi().equals(osaleja.getNimi())) {
-                leitud = true;
-                break;
-            }
-            i++;
-        }
-
-        if (leitud) {
-            return skoorid[i];
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Leiab osaleja koha edetabelis.
-     *
-     * @param osaleja - antud Osaleja
-     * @param type    - mis tüüpi edetabelit vaatame, 0 - kõik koos, 1 - ilma juhendajateta, 2 - ainult juhendajad.
-     * @return - osaleja koht.
-     */
-    public Integer leiaOsalejaKoht(Osaleja osaleja, int type) {
-        int i = 0;
-        for (Osaleja o : osalejad) {
-            // Ilma juh.
-            if (type == 1) if (o.isJuhendaja()) i--;
-            // Ainult juh
-            if (type == 2) if (!o.isJuhendaja()) i--;
-
-            if (o.getNimi().equals(osaleja.getNimi())) {
-                return i;
-            }
-            i++;
-        }
-        return null;
-    }
-
-    /**
-     * Leiab Osaleja objekti tema nime kaudu.
-     *
-     * @param osalejaNimi - antud nimi
-     * @return - terminalApp.Osaleja objekt
-     */
-    public Osaleja leiaOsaleja(String osalejaNimi) {
-        for (Osaleja osaleja : osalejad) {
-            if (osaleja.getRealNimi().equals(osalejaNimi)) {
-                return osaleja;
-            }
-        }
-        return null;
-    }
-
 }

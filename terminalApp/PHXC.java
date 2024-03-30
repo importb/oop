@@ -1,9 +1,12 @@
 package terminalApp;
-
 import java.net.http.HttpResponse;
 import java.util.*;
 
+
 public class PHXC {
+    public static List<Osaleja> osalejad = new ArrayList<>();
+    public static List<Edetabel> edetabelid = new ArrayList<>();
+
     /**
      * Kontrollib kas sõne on number või ei.
      *
@@ -21,15 +24,27 @@ public class PHXC {
     }
 
     /**
-     * ELO edetabeli koostamine
+     * Leia osaleja nime järgi
      *
-     * @param id       - edetabeli id
-     * @param osalejad - osalejate massiiv
-     * @return - ELO edetabel
+     * @param nimi - antud nimi
+     * @return - osaleja objekt
      */
-    public static Edetabel koostaELOEdetabel(int id, Osaleja[] osalejad) {
-        float[][] sortimiseks = new float[osalejad.length][2];
-        Edetabel ELOedetabel = new Edetabel(id, "ELO", "p");
+    public static Osaleja leiaOsaleja(String nimi) {
+        for (Osaleja o : osalejad) {
+            if (o.getNimi().equals(nimi)) return o;
+        }
+        return null;
+    }
+
+    /**
+     * Koosta ELO edetabel
+     *
+     * @param osalejad - osalejate list.
+     * @return - elo edetabel
+     */
+    public static Edetabel koostaELOEdetabel(List<Osaleja> osalejad) {
+        float[][] sortimiseks = new float[osalejad.size()][2];
+        Edetabel ELOedetabel = new Edetabel(999, "ELO", "p");
 
         int i = 0;
         for (Osaleja osaleja : osalejad) {
@@ -41,121 +56,98 @@ public class PHXC {
         }
         Arrays.sort(sortimiseks, Comparator.comparingDouble(a -> a[1]));
 
+        List<String> osalejadNimed = new ArrayList<>();
+        List<String> osalejadELO = new ArrayList<>();
+
         for (int j = sortimiseks.length - 1; j >= 0; j--) {
+            float[] s = sortimiseks[j];
+            int id = (int) s[0];
+
             for (Osaleja osaleja : osalejad) {
-                if (osaleja.getId() == sortimiseks[j][0]) {
-                    ELOedetabel.lisaOsaleja(osaleja);
-                    ELOedetabel.lisaSkoor(sortimiseks[j][1]);
-                    osaleja.lisaEdetabelise(ELOedetabel);
+                if (osaleja.getId() == id) {
+                    osalejadNimed.add(osaleja.getNimi());
+                    osalejadELO.add(String.valueOf(osaleja.getELO()));
                 }
             }
         }
+
+        ELOedetabel.setTulemused(osalejadELO);
+        ELOedetabel.setOsalejad(osalejadNimed);
 
         return ELOedetabel;
     }
 
     /**
-     * Lisab osaleja osalejad massiivi.
-     *
-     * @param osalejad - antud massiiv
-     * @param osaleja  - antud terminalApp.Osaleja objekt
-     * @return - uue massiivi, kus on vanad elemndid koos uuega.
+     * Kaabitseb phxc.ee lehekülje andmed ja valmistab ette
+     * osalejate objektid ning edetabelite objektid.
      */
-    public static Osaleja[] lisaOsaleja(Osaleja[] osalejad, Osaleja osaleja) {
-        Osaleja[] uus = new Osaleja[osalejad.length + 1];
+    public static void PHXCInit() {
+        HttpResponse<String> leheküljeAndmed = Kaabitseja.kaabitseLehekülge("http://www.phxc.ee");
 
-        System.arraycopy(osalejad, 0, uus, 0, osalejad.length);
-        uus[osalejad.length] = osaleja;
+        if (leheküljeAndmed != null) {
+            List<List<List<String>>> andmed = Kaabitseja.LeiaEdetabeliteAndmed(leheküljeAndmed);
 
-        return uus;
-    }
+            // Edetabelid
+            int edetabeleidKokku = andmed.get(0).size();
 
-    /**
-     * Kontrollib kas osaleja on juba lisatud osalejate massiivi
-     *
-     * @param osalejad - antud massiv
-     * @param osaleja  - antud Osaleja objekt
-     * @return - true/false selle põhjal kas on juba lisatud.
-     */
-    public static boolean osalejaJubaLisatud(Osaleja[] osalejad, Osaleja osaleja) {
-        for (Osaleja o : osalejad) {
-            if (o.getNimi().equals(osaleja.getNimi())) {
-                return true;
+            for (int i = 0; i < edetabeleidKokku; i++) {
+                String edetabeliNimi = andmed.get(0).get(i).getFirst();
+                List<String> edetabeliOsalejad = andmed.get(1).get(i);
+                List<String> edetabeliTulemused = andmed.get(2).get(i);
+                List<String> edetabeliÜhikud = andmed.get(3).get(i);
+
+                Edetabel edetabel = new Edetabel(i + 1, edetabeliNimi, edetabeliÜhikud.getFirst());
+                edetabel.setOsalejad(edetabeliOsalejad);
+                edetabel.setTulemused(edetabeliTulemused);
+
+                edetabelid.add(edetabel);
             }
-        }
-        return false;
-    }
 
-    public static void main(String[] args) throws Exception {
-        // kaabitse lehekülge
-        HttpResponse<String> unparsedData = Scraper.scrapeWebsite("http://www.phxc.ee");
-
-        // Massiivide ülesseadistus.
-        String[][] osalejateNimed = Parser.leiaOsalejad(unparsedData);
-        String[][] osalejateSkoorid = Parser.leiaTulemused(unparsedData);
-        String[][] edetabeliteSkooriühikud = Parser.leiaSkooriÜhikud(unparsedData);
-        String[] edetabeliNimed = Parser.leiaEdetabeliNimed(unparsedData);
-        Edetabel[] edetabelid = new Edetabel[edetabeliNimed.length];
-
-        // Koosta igale osalejale oma objekt ja lisa osalejate massiivi.
-        Osaleja[] osalejad = new Osaleja[0];
-        int id = 0;
-        for (String[] osalejadEdetabelis : osalejateNimed) {
-            for (String osalejaNimi : osalejadEdetabelis) {
-                // Kontrolli kas on juhendaja
-                boolean juhendaja = false;
-                if (osalejaNimi.contains("(Juh)")) {
-                    juhendaja = true;
-                    osalejaNimi = osalejaNimi.substring(0, osalejaNimi.length() - 6);
-                }
-
-                // Koosta osaleja objekt ja lisa osalejate massiivi.
-                Osaleja osaleja = new Osaleja(id, osalejaNimi, juhendaja);
-                if (!osalejaJubaLisatud(osalejad, osaleja)) {
-                    osalejad = lisaOsaleja(osalejad, osaleja);
-                }
-                id++;
-            }
-        }
-
-        // Koosta edetabeli klassid ja lisa osalejad sinna.
-        int i = 0;
-        for (String edetabeliNimi : edetabeliNimed) {
-            // Leia edetabeli skooriühik
-            String skooriühik = edetabeliteSkooriühikud[i][0];
+            // Osalejad
+            int id = 0;
+            for (int i = 0; i < edetabeleidKokku; i++) {
+                List<String> edetabeliOsalejad = andmed.get(1).get(i);
 
 
-            // Koosta edetabel
-            Edetabel edetabel = new Edetabel(i, edetabeliNimi, skooriühik);
+                for (String o : edetabeliOsalejad) {
+                    boolean juhendaja = o.contains("(Juh)");
+                    String osalejaNimi = o.replace(" (Juh)", "");
+                    Osaleja osaleja = leiaOsaleja(osalejaNimi);
 
-            for (String osalejaNimi : osalejateNimed[i]) {
-                for (Osaleja osaleja : osalejad) {
-                    if (osaleja.getNimi().equals(osalejaNimi)) {
-                        edetabel.lisaOsaleja(osaleja);
-                        osaleja.lisaEdetabelise(edetabel);
-                        break;
+                    if (osaleja == null) {
+                        Osaleja osalejaUus = new Osaleja(id, osalejaNimi, juhendaja);
+                        osalejaUus.lisaEdetabel(edetabelid.get(i));
+
+                        osalejad.add(osalejaUus);
+                        id++;
+                    } else {
+                        osaleja.lisaEdetabel(edetabelid.get(i));
                     }
                 }
             }
-            for (String osalejaSkoor : osalejateSkoorid[i]) {
-                edetabel.lisaSkoor(Float.parseFloat(osalejaSkoor));
+
+            // ELO edetabel
+            Edetabel elo = koostaELOEdetabel(osalejad);
+
+            for(Osaleja osaleja : osalejad) {
+                osaleja.setELOedetabel(elo);
             }
 
-            edetabelid[i] = edetabel;
-            i++;
+            edetabelid.addFirst(elo);
         }
+    }
 
-        // Arvuta osalejate ELO ja koosta ELO edetabel
-        Edetabel ELOedetabel = koostaELOEdetabel(edetabelid.length, osalejad);
 
-        // Peamine loop
-        boolean run = true;
-        while (run) {
+    public static void main(String[] args) {
+        PHXCInit();
+
+        boolean running = true;
+        while (running) {
             Scanner sisend = new Scanner(System.in);
-            System.out.print("[1] - vaata ülesande edetabelit\n[2] - ELO edetabel\n[3] - leia osaleja\n[x] - exit\n");
-            String tekst = sisend.nextLine().toLowerCase();
+            System.out.print("[1] - Vaata ülesande edetabelit\n[2] - ELO edetabel\n[3] - Leia osaleja\n[x] - Exit\n");
+            String tegevus = sisend.nextLine().toLowerCase();
 
-            switch (tekst) {
+            switch (tegevus) {
                 // edetabeli näitamine
                 case "1":
                     System.out.println("Millist edetabelit soovite näha? (id / nimi)");
@@ -164,8 +156,8 @@ public class PHXC {
                     Edetabel edetabel = null;
 
                     if (kasOnNumber(case1antud)) {
-                        int number = Math.max(1, Math.min(edetabelid.length, Integer.parseInt(case1antud)));
-                        edetabel = edetabelid[number - 1];
+                        int number = Math.max(1, Math.min(edetabelid.size() - 1, Integer.parseInt(case1antud)));
+                        edetabel = edetabelid.get(number);
                     } else {
                         for (Edetabel e : edetabelid) {
                             if (e.getNimi().equals(case1antud)) {
@@ -181,40 +173,28 @@ public class PHXC {
                         System.out.println("Sellise nimega edetabelit ei leitud.");
                     }
                     break;
-
-                // ELO edetabel
+                // näita ELO edetabel
                 case "2":
-                    System.out.println(ELOedetabel);
+                    System.out.println(edetabelid.getFirst());
                     break;
-
-                // osaleja otsimine
+                // Leia osaleja nime pidi
                 case "3":
                     System.out.print("Osaleja nimi: ");
-                    String nimi = String.valueOf(sisend.nextLine()).toLowerCase();
-                    Osaleja otsitav = null;
+                    String osalejaLeidmine = sisend.nextLine().toLowerCase();
+                    System.out.println();
 
-                    for (Osaleja o : osalejad) {
-                        if (Objects.equals(o.getRealNimi().toLowerCase(), nimi)) {
-                            otsitav = o;
+                    for (Osaleja osaleja : osalejad) {
+                        if (osaleja.getNimi().toLowerCase().equals(osalejaLeidmine)) {
+                            System.out.println(osaleja);
                             break;
                         }
                     }
-
-                    System.out.println();
-                    if (otsitav != null) {
-                        System.out.println(otsitav);
-                    } else {
-                        System.out.println("Ei leidnud sellise nimega osalejat.");
-                    }
-                    System.out.println();
                     break;
-
-                // exit.
                 case "x":
-                    run = false;
+                    running = false;
                     break;
             }
         }
+
     }
 }
-
