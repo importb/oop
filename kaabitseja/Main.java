@@ -230,6 +230,9 @@ public class Main {
                     skooriühik = skoor.split(" ")[1];
                 }
 
+                // leia skoor
+                Float fSkoor = Float.valueOf(skoor.split(" ")[0]);
+
                 // vormista JSON
                 String JSON = String.format(
                         "{\"timestamp\":\"%s\", \"edetabel_id\":%s, \"edetabel_nimi\":\"%s\", \"osaleja\":\"%s\", \"skoor\":%s, \"skooriühik\":\"%s\"}",
@@ -237,7 +240,7 @@ public class Main {
                         edetabel,
                         edetabelid[edetabel - 1],
                         osaleja.split("\\.")[1].substring(1),
-                        Float.parseFloat(skoor.substring(0, skoor.length() - 3)),
+                        fSkoor,
                         skooriühik
                 );
 
