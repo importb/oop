@@ -82,7 +82,10 @@ public class PHXC {
      * osalejate objektid ning edetabelite objektid.
      */
     public static void PHXCInit() {
-        HttpResponse<String> leheküljeAndmed = Kaabitseja.kaabitseLehekülge("http://www.phxc.ee");
+        HttpResponse<String> leheküljeAndmed = Kaabitseja.kaabitseLehekülge("https://www.phxc.ee");
+
+        // backup.
+        if (leheküljeAndmed == null) leheküljeAndmed = Kaabitseja.kaabitseLehekülge("http://www.phxc.ee");
 
         if (leheküljeAndmed != null) {
             List<List<List<String>>> andmed = Kaabitseja.LeiaEdetabeliteAndmed(leheküljeAndmed);
