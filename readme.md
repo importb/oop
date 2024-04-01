@@ -1,4 +1,4 @@
-# oop projekt - xhcp lehe kaabitseja
+# oop projekt - phxc lehe kaabitseja
 
 Autorid: Rainer Vana, Kevin Akkermann
 
