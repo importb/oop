@@ -74,15 +74,22 @@ public class Osaleja {
             String parimTulemus = edetabel.leiaOsalejaTulemus(0);
             String ühik = edetabel.getSkooriÜhik();
 
-            double paremProtsent = Double.parseDouble(tulemus) / Double.parseDouble(parimTulemus) * 100;
-            edetabeliteTulemused.append(
-                    String.format("  %s%s(Parim: %s, %.0f%% parem)\n",
-                            tulemus + ühik,
-                            " ".repeat(10 - (tulemus + ühik).length()),
-                            parimTulemus + ühik,
-                            paremProtsent)
-            );
-
+            if (!tulemus.equals(parimTulemus)) {
+                double paremProtsent = Double.parseDouble(tulemus) / Double.parseDouble(parimTulemus) * 100;
+                edetabeliteTulemused.append(
+                        String.format("  %s%s(Parim: %s, %.0f%% parem)\n",
+                                tulemus + ühik,
+                                " ".repeat(10 - (tulemus + ühik).length()),
+                                parimTulemus + ühik,
+                                paremProtsent)
+                );
+            }else{
+                edetabeliteTulemused.append(
+                        String.format("  %s%s (Parim või samaväärne tulemus!)\n",
+                        tulemus + ühik,
+                        " ".repeat(10 - (tulemus + ühik).length()))
+                );
+            }
 
             edetabeliteKohad
                     .append("[ ")
