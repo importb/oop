@@ -1,6 +1,6 @@
 # kaabitseja
 
-Mikroteenus, mis iga 5 minuti tagant kaabib http://phxc.ee lehelt andmed ja kirjutab andmed MySQL andmebaasi.
+Mikroteenus, mis iga 5 minuti tagant kaabib http://phxc.ee lehelt andmed ja kirjutab andmed MySQL andmebaasi. See konteiner jookseb AWS EC2 Ubuntu virtuaalmasinas.
 
 ## Kuidas lokaalselt jooksutada?
 
@@ -9,11 +9,11 @@ Mikroteenus, mis iga 5 minuti tagant kaabib http://phxc.ee lehelt andmed ja kirj
 
 0. Vajadusel installi Java
 1. Hangi õige `.env` fail ja anna talle väärtused:
-1.1. MYSQL_HOST (url ilma jdbc:mysql:// osata)
-1.2. MYSQL_PORT
-1.3. MYSQL_USERNAME
-1.4. MYSQL_PASSWORD
-1.5. MYSQL_NAME (andmebaasi nimi)
+    1. MYSQL_HOST (url ilma jdbc:mysql:// osata)
+    2. MYSQL_PORT
+    3. MYSQL_USERNAME
+    4. MYSQL_PASSWORD
+    5. MYSQL_NAME (andmebaasi nimi)
 2. `chmod +x build.sh run.sh`
 3. `./build.sh && ./run.sh`
 
