@@ -2,6 +2,19 @@
 
 Mikroteenus, mis iga 5 minuti tagant kaabib http://phxc.ee lehelt andmed ja kirjutab andmed MySQL andmebaasi. See konteiner jookseb AWS EC2 Ubuntu virtuaalmasinas.
 
+## Klasside ja meetodite kirjeldused:
+
+- `String[] lisaMassiivi(String[] massiiv, String element)` - abimeetod, mis lisab sõneMassivi uue elemendi
+
+- `Map<String, String> readEnvFile(String kaust)` - meetod, mis loeb sisse kõik .env failis olevad keskkonnamuutujad (MYSQL-iga ühendumiseks) ja tagastab Map'i
+
+- `HttpResponse<String> scrapeWebsite(String link)` - meetod, mis saadab päringu link muutujas olevale lehele
+
+- `void writeDataToDatabase(ArrayList<String> data, String kaust)` - meetod, mis võtab argumendina kaabitsetud andmed ArrayListina ning kirjutab need andmed MySQL andmebaasi. Enne kirjutamist kontrollime, kas kindel edetabel on veel lahti ning suletud edetabeli tulemusi me ei kirjuta üle.
+
+- `void main(String[] args)` - peameetod, mis kaabib kõik andmed lehel, muudab need JSON-iks, kirjutab faili ja seejärel andmebaasi.
+
+
 ## Kuidas lokaalselt jooksutada?
 
 ### Linux / WSL
