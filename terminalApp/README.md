@@ -1,58 +1,49 @@
 ## Klassid:   
 <pre>
     <b>Osaleja</b>
-    int id                  // osaleja ainulaadne id
-    String nimi             // osaleja nimi
-    int ELO                 // osaleja ELO, põhineb tema kohast edetabelites.
-    Edetabel[] edetabelid   // Edetabeli objektid, kus osaleja on osalenud.
-    boolean juhendaja       // kas osaleja on juhendaja või mitte.
+    int id                      // osaleja ainulaadne id
+    String nimi                 // osaleja nimi
+    float ELO                   // osaleja ELO, põhineb tema kohast edetabelites.
+    List<Edetabel> edetabelid   // Edetabeli objektid, kus osaleja on osalenud.
+    Edetabel ELOedetabel        // ELO edetabeli objekt.
+    boolean juhendaja           // kas osaleja on juhendaja või mitte.
   
     <b>Edetabel</b>
-    int id                  // edetabeli ainulaadne id
-    String nimi             // edetabeli nimi
-    Osaleja[] osalejad      // edetabelis olevate osalejate objektid.
-    float[] skoorid         // osalejate skoorid. Kui osaleja on massiivis 3. kohal siis tema skoor on ka 3. kohal.
-    String skooriÜhik       // skoori ühik, (ms, p, ...)
+    int id                      // edetabeli ainulaadne id
+    String nimi                 // edetabeli nimi
+    List<String> osalejad       // edetabelis olevate osalejate nimed.
+    List<String> tulemused      // osalejate tulemused Kui osaleja on massiivis 3. kohal siis tema skoor on ka 3. kohal.
+    String skooriÜhik           // skoori ühik, (ms, p, ...)
 </pre>
 
 ## Funktsioonid:
 - **PHXC.java (peamine klass)**
-    - `osalejaJubaLisatud(Osaleja[] osalejad, Osaleja osaleja)` : tagastab true/false põhinedes sellel kas osaleja objekt on juba lisatud massiivi.
-    - `lisaOsaleja(Osaleja[] osalejad, Osaleja osaleja)` : lisab Osaleja objekti osalejate massiivi. NB! tagastab uue massiivi.
+    - `PHXCInit()` : kaabitseb phxc.ee lehekülje andmed ja valmistab ette osalejate objektid ning edetabelite objektid.
     - `koostaELOEdetabel(int id, Osaleja[] osalejad)` : koostab ELOedetabeli
     - `kasOnNumber(String str)` : kontrollib kas antud sõne on number või mitte.
- 
+    - `leiaOsaleja(String nimi)` : leiab osaleja objekti antud nime kaudu.
       
-- **Scraper.java**
-    - `scrapeWebsite(String link)` : kaabitseb lehe külje ja tagastab HttpResponse-i.
+- **Kaabitseja.java**
+    - `kaabitseLehekülge(String link)` : requesti kaudu tõmbab lehekülje andmed
+    - `LeiaEdetabeliteAndmed(HttpResponse<String> data)` : leiab httpresponse-st kõik edetabeli andmed välja.
  
-      
-- **Parser.java**
-    - `lisaMassiivi(String[] massiiv, String element)` : koostab uue massiivi, kuhu lisab vanad elemendid, koos uuega. Tagastab uue massiivi.
-    - `leiaEdetabeliNimed(HttpResponse<String> data)` : leiab httpresponse-st kõik edetabeli nimed välja ja tagastab massiivi kus kõik nimed on.
-    - `leiaOsalejad(HttpResponse<String> data)` : leiab httprespone-st kõik osalejad, k.a arvatud duplikaadid.
-    - `leiaTulemused(HttpResponse<String> data)` : leiab httprespone-st kõik tulemused, k.a arvatud duplikaadid.
- 
-      
 - **Osaleja.java**
-    - `getNimi()` : tagastab osaleja nime, aga kui on juhendaja, siis tagastab "nimi + (Juh)".
-    - `getRealNimi()` : tagastab nime.
-    - `getEdetabelid()` : tagastab edetabelite massiivi. Massiivis on ainult need edetabelid kus osaleja osaleb.
-    - `getELO()` : tagastab osaleja ELO.
-    - `isJuhendaja()` : tagastab true/false põhinedes sellel kas osaleja on juhendaja.
-    - `lisaEdetabelisse(Edetabel edetabel)` : lisab Edetabeli objekti osaleja edetabelid massiivi
-    - `arvutaELO()` : arvutab osaleja ELO, kuidas arvutatakse on funktsioonis endas kirjas.
-    - `toString()` : tagastab osaleja info.
- 
+    - `setELOedetabel(Edetabel uus)` : seadistab ELOedetabeli muutuja.
+    - `getNimi()` : tagastab osaleja nime
+    - `getELO()` : tagastab osaleja ELO
+    - `getId()` : tagastab osaleja id
+    - `easeInCubic(double x)` : ease funktsioon ELO arvutamiseks.
+    - `arvutaELO()` : arvutab osaleja ELO põhinedes tema kohale edetabelites.
+    - `lisaEdetabel(Edetabel edetabel)` : lisab edetabeli osaleja edetabelite listi. 
       
 - **Edetabel.java**
-    - `getId()` : tagastab edetabeli ainulaadse id.
     - `getNimi()` : tagastab edetabeli nime.
-    - `getOsalejad()` : tagastab osalejate massiivi, kus on kõigi edetabelis osalejate objektid.
-    - `getSkoorid()` : tagastab skooride massiivi, kus on kõigi edetabelis osalejate skoorid.
-    - `toString()` : tagastab edetabeli info.
-    - `lisaOsaleja(Osaleja osaleja)` : lisab osaleja selle edetabeli osalejate massiivi, kui juba lisatud ei ole. Ehk duplikaate tekkida ei saa.
-    - `leiaOsalejaSkoor(Osaleja osaleja)` : tagastab osaleja skoori edetabelis.
-    - `leiaOsalejaKoht(Osaleja osaleja, int type)` : tagastab osaleja koha edetabelis. (type: 0 - kõik osalejad, 1 - ilma juh., 2 - ainult juh.)
-    - `leiaOsaleja(String osalejaNimi)` : tagastab Osaleja objekti tema nime kaudu.
-
+    - `getSkooriÜhik()` : tagastab edetabeli skooriühiku
+    - `getOsalejad()` : tagastab osalejate listi, kus on kõigi edetabelis osalejate nimed.
+    - `setOsaleja(List<String> osalejad)` : seadistab osalejad muutuja
+    - `setTulemused(List<String> tulemused)` : seadistab tulemused muutuja
+    - `leiaOsalejaKoht(String nimi)` : tagastab osaleja koha edetabelis
+    - `leiaOsalejaKohtIlmaJuh(String nimi)` : tagastab osaleja koha edetabelis (juhendajad välja võetud)
+    - `leiaOsalejaKohtJuh(String nimi)` : tagastab osaleja koha edetabelis (ainult juhendajad)
+    - `leiaOsalejaTulemus(String nimi)` : leiab osaleja tulemuse nime kaudu
+    - `leiaOsalejaTulemus(int koht)` : leiab osaleja tulemuse koha kaudu
