@@ -168,7 +168,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        HttpResponse<String> unparsedData = scrapeWebsite("http://www.phxc.ee");
+        HttpResponse<String> unparsedData = scrapeWebsite("https://www.phxc.ee");
         String[] bodyData = unparsedData.body().replace("\t", "").split("\n");
 
         String kaust;
