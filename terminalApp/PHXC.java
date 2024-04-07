@@ -99,6 +99,17 @@ public class PHXC {
                 List<String> edetabeliTulemused = andmed.get(2).get(i);
                 List<String> edetabeliÜhikud = andmed.get(3).get(i);
 
+
+                // JAOTUS_RÜHMADEKS fix. TODO: something better.
+                if (i == 5) {
+                    List<String> koopia = new ArrayList<>();
+                    for (int j = 0; j < edetabeliTulemused.size(); j++) {
+                        if (j % 2 != 0) koopia.add(edetabeliTulemused.get(j));
+                    }
+                    edetabeliTulemused = koopia;
+                    edetabeliÜhikud.set(0, "ms");
+                }
+
                 Edetabel edetabel = new Edetabel(i + 1, edetabeliNimi, edetabeliÜhikud.getFirst());
                 edetabel.setOsalejad(edetabeliOsalejad);
                 edetabel.setTulemused(edetabeliTulemused);

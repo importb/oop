@@ -62,6 +62,7 @@ public class Kaabitseja {
                         .replace("</span>", "")
                         .replace("<span class=\"pseudo\">", "")
                         .replace(" ", "")
+                        .replace("&amp;", "&")
                         .split("\\.");
 
                 String osalejaNimi = osaleja[1];
