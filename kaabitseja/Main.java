@@ -8,10 +8,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -190,10 +187,12 @@ public class Main {
                 edetabelid = lisaMassiivi(edetabelid, line.substring(4, line.length() - 5));
             }
             if (line.startsWith("<span class=\"pseudo\">")) {
-                String lineVormistatud = line.substring(21, line.length() - 7);
+                String lineVormistatud = line.substring(21, line.length() - 7).replace("&amp;", "&");
                 osalejad = lisaMassiivi(osalejad, lineVormistatud);
             }
             if (line.startsWith("<span class=\"skoor\">")) {
+                if (edetabelid.length == 6) if (!line.contains("ms")) continue;
+
                 String lineVormistatud = line.substring(20, line.length() - 7).replace("<span class=\"komakoht\">", "").replace("</span>", "");
                 skoorid = lisaMassiivi(skoorid, lineVormistatud);
             }
