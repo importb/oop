@@ -1,5 +1,4 @@
 package terminalApp;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,8 +6,6 @@ public class Osaleja {
     private final int id;
     private final String nimi;
     private final boolean juhendaja;
-    private float ELO;
-    private Edetabel ELOedetabel;
     private List<Edetabel> edetabelid = new ArrayList<>();
 
     public Osaleja(int id, String nimi, boolean juhendaja) {
@@ -17,16 +14,8 @@ public class Osaleja {
         this.juhendaja = juhendaja;
     }
 
-    public void setELOedetabel(Edetabel uus) {
-        this.ELOedetabel = uus;
-    }
-
     public String getNimi() {
         return nimi;
-    }
-
-    public float getELO() {
-        return ELO;
     }
 
     public int getId() {
@@ -43,94 +32,68 @@ public class Osaleja {
      * Valisin EaseInCubic, kuna see tundub kõige parem tasakaal koha ning mitmes edetabelis
      * osalenud on vahel.
      */
-    public void arvutaELO() {
-        float uusELO = 100;
+    public float arvutaELO() {
+        float ELO = 100;
 
         for (Edetabel edetabel : edetabelid) {
-            int koht = edetabel.leiaOsalejaKoht(nimi);
+            int koht = edetabel.leiaKoht(this);
             int kohtiKokku = edetabel.getOsalejad().size();
 
-            uusELO += (float) easeInCubic(0.8 - ((double) koht / kohtiKokku)) * 45;
+            ELO += (float) easeInCubic(0.8 - ((double) koht / kohtiKokku)) * 45;
         }
 
-        this.ELO = Math.max(0, uusELO);
+        return ELO;
     }
 
     public void lisaEdetabel(Edetabel edetabel) {
         edetabelid.add(edetabel);
     }
 
+
     public String toString() {
+        // Edetabelid
         StringBuilder edetabeliteNimed = new StringBuilder();
-        StringBuilder edetabeliteTulemused = new StringBuilder();
         StringBuilder edetabeliteKohad = new StringBuilder();
-        StringBuilder edetabeliteKohadEri = new StringBuilder();
-        String eri = "ilma juh";
+        List<List<String>> edetabeliteSkoorid = new ArrayList<>();
+        List<List<String>> edetabeliteSkooriÜhikud = new ArrayList<>();
 
-        for (Edetabel edetabel : edetabelid) {
-            edetabeliteNimed.append("  [ ").append(edetabel.getNimi()).append(" ] \n");
-
-            String tulemus = edetabel.leiaOsalejaTulemus(this.getNimi());
-            String parimTulemus = edetabel.leiaOsalejaTulemus(0);
-            String ühik = edetabel.getSkooriÜhik();
-
-            if (!tulemus.equals(parimTulemus)) {
-                double paremProtsent = Double.parseDouble(tulemus) / Double.parseDouble(parimTulemus) * 100;
-                edetabeliteTulemused.append(
-                        String.format("  %s%s(Parim: %s, %.0f%% parem)\n",
-                                tulemus + ühik,
-                                " ".repeat(10 - (tulemus + ühik).length()),
-                                parimTulemus + ühik,
-                                paremProtsent)
-                );
-            }else{
-                edetabeliteTulemused.append(
-                        String.format("  %s%s (Parim või samaväärne tulemus!)\n",
-                        tulemus + ühik,
-                        " ".repeat(10 - (tulemus + ühik).length()))
-                );
-            }
-
-            edetabeliteKohad
-                    .append("[ ")
-                    .append(edetabel.leiaOsalejaKoht(this.getNimi()) + 1)
-                    .append(". ] ");
-
-            if (!juhendaja){
-                edetabeliteKohadEri
-                        .append("[ ")
-                        .append(edetabel.leiaOsalejaKohtIlmaJuh(this.getNimi()) + 1)
-                        .append(". ] ");
-            }else{
-                eri = "juh";
-                edetabeliteKohadEri
-                        .append("[ ")
-                        .append(edetabel.leiaOsalejaKohtJuh(this.getNimi()) + 1)
-                        .append(". ] ");
-            }
+        for(Edetabel edetabel : edetabelid) {
+            edetabeliteNimed.append("  [ ").append(edetabel.getNimi()).append(" ]\n");
+            edetabeliteSkoorid.add(edetabel.leiaTulemus(this));
+            edetabeliteSkooriÜhikud.add(edetabel.leiaSkooriÜhik(this));
+            edetabeliteKohad.append("[ ").append(edetabel.leiaKoht(this) + 1).append(". ] ");
         }
 
-        String eriNimi = "";
-        if (juhendaja) {
-            eriNimi = " (Juh.)";
+        StringBuilder edetabeliteTulemused = new StringBuilder();
+
+        for (int i = 0; i < edetabeliteSkoorid.size(); i++) {
+            List<String> tulemus = new ArrayList<>();
+
+            for (int j = 0; j < edetabeliteSkoorid.get(i).size(); j++) {
+                String t = edetabeliteSkoorid.get(i).get(j) + " " + edetabeliteSkooriÜhikud.get(i).get(j);
+
+                tulemus.add(t.trim());
+            }
+
+            edetabeliteTulemused.append("  ").append(tulemus).append("\n");
         }
 
-        return String.format(
-                """
-                        %s%s, ID : %s
-                        - Osaleb edetabelites :
-                        %s
-                        - Tulemused :
-                        %s
-                        - Kohad :
-                          %s
-                                                
-                        - Kohad %s :
-                          %s
-                                                
-                        - ELO :
-                          %s. %.2fp
-                        """,
-                nimi, eriNimi, id, edetabeliteNimed, edetabeliteTulemused, edetabeliteKohad, eri, edetabeliteKohadEri, ELOedetabel.leiaOsalejaKoht(nimi) + 1, ELO);
+        // Juhendaja
+        String lisa = "";
+        if (juhendaja) lisa = "(Juh.)";
+
+
+        return String.format("""
+                %s %s, ID : %s
+                - Osaleb edetabelites :
+                %s
+                - Tulemused : 
+                %s
+                - Kohad :
+                  %s
+                  
+                - ELO :
+                  %s
+                """, nimi, lisa, id, edetabeliteNimed, edetabeliteTulemused, edetabeliteKohad, arvutaELO());
     }
 }

@@ -4,109 +4,130 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Kaabitseja {
     public static HttpResponse<String> kaabitseLehekülge(String link) {
-        try (HttpClient client = HttpClient.newHttpClient()){
+        try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(link)).build();
             return client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         return null;
     }
 
-    public static List<List<List<String>>> LeiaEdetabeliteAndmed(HttpResponse<String> data) {
-        String[] dataArr = data.body().replace("\t", "").split("\n");
+    public static Edetabel leiaEdetabel(HttpResponse<String> data, int id) {
+        String[] body = data.body().replace("\t", "").split("\n");
 
-        List<List<List<String>>> andmed = new ArrayList<>();
+        // edetabel mille tagastame
+        Edetabel edetabel = new Edetabel(id);
 
-        // Nendest listidest koostatakse viimane return List.
-        List<String> edetabeliteNimed = new ArrayList<>();
-        List<List<String>> edetabeliteOsalejad = new ArrayList<>();
-        List<List<String>> edetabeliteTulemused = new ArrayList<>();
-        List<List<String>> edetabeliteÜhikud = new ArrayList<>();
+        int praeguneEdetabel = 0;
+        List<List<String>> andmed = new ArrayList<>();
+        List<String> osalejaAndmed = new ArrayList<>();
+        for (String line : body) {
+            // leiame otsitava edetabeli
+            if (line.contains("<h1>")) praeguneEdetabel++;
+            if (praeguneEdetabel != id) continue;
 
-        // Need listid tühjendatakse igakord, kui uus edetabel tuleb.
-        List<String> edetabeliOsalejad = new ArrayList<>();
-        List<String> edetabeliTulemused = new ArrayList<>();
-        List<String> edetabeliÜhikud = new ArrayList<>();
+            // Edetabeli nimi
+            if (line.contains("<h1>")) edetabel.setNimi(line.substring(4, line.length() - 5));
 
-        for (String line : dataArr) {
-            // Järgmine edetabel
-            if (line.startsWith("<h1>")) {
-                if (!edetabeliteNimed.isEmpty()) {
-                    // Osalejad
-                    edetabeliteOsalejad.add(edetabeliOsalejad);
-                    edetabeliOsalejad = new ArrayList<>();
-
-                    // Tulemused
-                    edetabeliteTulemused.add(edetabeliTulemused);
-                    edetabeliTulemused = new ArrayList<>();
-
-                    // Ühikud
-                    edetabeliteÜhikud.add(edetabeliÜhikud);
-                    edetabeliÜhikud = new ArrayList<>();
-                }
-
-                // Edetabeli nimi
-                edetabeliteNimed.add(line.substring(4, line.length()-5));
-            }
-
-
-            // Edetabeli osalejad
-            if (line.startsWith("<span class=\"pseudo\">")) {
-                String[] osaleja = line
-                        .replace("</span>", "")
+            // leiame osaleja nime
+            if (line.contains("pseudo")) {
+                String[] osaleja = line.replace("</span>", "")
                         .replace("<span class=\"pseudo\">", "")
                         .replace(" ", "")
+                        .replace("&amp;", "&")
                         .split("\\.");
 
                 String osalejaNimi = osaleja[1];
 
-                if (osaleja[0].equals("Juh")) {
-                    osalejaNimi += " (Juh)";
-                }
+                // Vaata kas juhendaja.
+                if (osaleja[0].equals("Juh")) osalejaNimi += " (Juh)";
 
-                edetabeliOsalejad.add(osalejaNimi);
+                osalejaAndmed.add(osalejaNimi);
             }
 
-            // Edetabeli tulemused
-            if (line.startsWith("<span class=\"skoor\">")) {
-                String[] skoor = line.substring(20, line.length() - 7)
+            // leiame osaleja skoori
+            if (line.contains("skoor\"")) {
+                String skoor = line.substring(20, line.length() - 7)
                         .replace("<span class=\"komakoht\">", "")
-                        .replace("</span>", "").split(" ");
+                        .replace("</span>", "");
 
-                // Leia tulemuse ühik
-                String ühik = "";
-                if (skoor.length > 1){
-                    ühik = skoor[1];
-                }
+                osalejaAndmed.add(skoor);
+            }
 
-                edetabeliÜhikud.add(ühik);
-                edetabeliTulemused.add(skoor[0]);
+            // uus osaleja
+            if (line.equals("</div>")) {
+                if (!osalejaAndmed.isEmpty()) andmed.add(osalejaAndmed);
+                osalejaAndmed = new ArrayList<>();
             }
         }
 
-        // Lisa viimased ka
-        edetabeliteOsalejad.add(edetabeliOsalejad);
-        edetabeliteTulemused.add(edetabeliTulemused);
-        edetabeliteÜhikud.add(edetabeliÜhikud);
+        // leiame osalejate nime ja skoorid.
+        List<String> osalejadFinal = new ArrayList<>();
+        List<List<String>> tulemusedFinal = new ArrayList<>();
+        List<List<String>> skooriühikudFinal = new ArrayList<>();
 
-        // Lisa lõpp tulemusse.
-        List<List<String>> eNimed = new ArrayList<>();
+        for (List<String> osaleja : andmed) {
+            // lisame nime
+            osalejadFinal.add(osaleja.getFirst());
 
-        for(String n : edetabeliteNimed) {
-            eNimed.add(Collections.singletonList(n));
+            // lisame tulemused ja skooriühikud
+            List<String> tulemused = new ArrayList<>();
+            List<String> skooriÜhikud = new ArrayList<>();
+
+            for (int i = 1; i < osaleja.size(); i++) {
+                String[] skooriAndmed = osaleja.get(i).split(" ");
+
+                // Skoor ise
+                if (skooriAndmed.length > 0) {
+                    tulemused.add(skooriAndmed[0]);
+                } else {
+                    tulemused.add("");
+                }
+
+                // Skooriühik
+                if (skooriAndmed.length > 1) {
+                    skooriÜhikud.add(skooriAndmed[1]);
+                } else {
+                    skooriÜhikud.add("");
+                }
+
+            }
+
+            tulemusedFinal.add(tulemused);
+            skooriühikudFinal.add(skooriÜhikud);
         }
 
-        andmed.add(eNimed);
-        andmed.add(edetabeliteOsalejad);
-        andmed.add(edetabeliteTulemused);
-        andmed.add(edetabeliteÜhikud);
 
-        return andmed;
+        // Seadista edetabel
+        edetabel.setOsalejad(osalejadFinal);
+        edetabel.setTulemused(tulemusedFinal);
+        edetabel.setSkooriÜhikud(skooriühikudFinal);
+
+        return edetabel;
+    }
+
+    public static List<String> leiaOsalejad(HttpResponse<String> data) {
+        String[] body = data.body().replace("\t", "").split("\n");
+        Set<String> osalejateNimedSet = new HashSet<>();
+
+        for (String line : body) {
+            if (line.contains("pseudo")) {
+                String[] osaleja = line.substring(21, line.length() - 7).split("\\.");
+
+                String nimi = osaleja[1].trim();
+                if (osaleja[0].equals("Juh")) nimi += " [JUH]";
+
+                osalejateNimedSet.add(nimi);
+            }
+        }
+
+        return new ArrayList<>(osalejateNimedSet);
     }
 }
+
+
