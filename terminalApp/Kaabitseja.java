@@ -17,11 +17,11 @@ public class Kaabitseja {
         return null;
     }
 
-    public static Edetabel leiaEdetabel(HttpResponse<String> data, int id) {
+    public static terminalApp.Edetabel leiaEdetabel(HttpResponse<String> data, int id) {
         String[] body = data.body().replace("\t", "").split("\n");
 
         // edetabel mille tagastame
-        Edetabel edetabel = new Edetabel(id);
+        terminalApp.Edetabel edetabel = new terminalApp.Edetabel(id);
 
         int praeguneEdetabel = 0;
         List<List<String>> andmed = new ArrayList<>();

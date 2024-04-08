@@ -6,7 +6,7 @@ public class Osaleja {
     private final int id;
     private final String nimi;
     private final boolean juhendaja;
-    private List<Edetabel> edetabelid = new ArrayList<>();
+    private List<terminalApp.Edetabel> edetabelid = new ArrayList<>();
 
     public Osaleja(int id, String nimi, boolean juhendaja) {
         this.id = id;
@@ -35,7 +35,7 @@ public class Osaleja {
     public float arvutaELO() {
         float ELO = 100;
 
-        for (Edetabel edetabel : edetabelid) {
+        for (terminalApp.Edetabel edetabel : edetabelid) {
             int koht = edetabel.leiaKoht(this);
             int kohtiKokku = edetabel.getOsalejad().size();
 
@@ -45,7 +45,7 @@ public class Osaleja {
         return ELO;
     }
 
-    public void lisaEdetabel(Edetabel edetabel) {
+    public void lisaEdetabel(terminalApp.Edetabel edetabel) {
         edetabelid.add(edetabel);
     }
 
@@ -57,7 +57,7 @@ public class Osaleja {
         List<List<String>> edetabeliteSkoorid = new ArrayList<>();
         List<List<String>> edetabeliteSkooriÜhikud = new ArrayList<>();
 
-        for(Edetabel edetabel : edetabelid) {
+        for(terminalApp.Edetabel edetabel : edetabelid) {
             edetabeliteNimed.append("  [ ").append(edetabel.getNimi()).append(" ]\n");
             edetabeliteSkoorid.add(edetabel.leiaTulemus(this));
             edetabeliteSkooriÜhikud.add(edetabel.leiaSkooriÜhik(this));
