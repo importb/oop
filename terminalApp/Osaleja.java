@@ -1,4 +1,5 @@
 package terminalApp;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +35,8 @@ public class Osaleja {
     /**
      * Arvutab osaleja ELO põhinedes tema kohale edetabelites.
      * ELO saamine edetabeli kohta oleneb osaleja kohast edetabelis ning palju tulemusi edetabelis on.
-     * Valisin EaseInCubic, kuna see tundub kõige parem tasakaal koha ning mitmes edetabelis
-     * osalenud on vahel.
+     * Valisime EaseInCubic, kuna see tundub kõige parem tasakaal koha ning
+     * mitmes edetabelis osalenud on vahel.
      */
     public float arvutaELO() {
         float ELO = 100;
@@ -65,25 +66,43 @@ public class Osaleja {
         List<List<String>> edetabeliteSkoorid = new ArrayList<>();
         List<List<String>> edetabeliteSkooriÜhikud = new ArrayList<>();
 
-        for(Edetabel edetabel : edetabelid) {
+        List<List<String>> parimadSkoorid = new ArrayList<>();
+
+        for (Edetabel edetabel : edetabelid) {
             edetabeliteNimed.append("  [ ").append(edetabel.getNimi()).append(" ]\n");
             edetabeliteSkoorid.add(edetabel.leiaTulemus(this));
             edetabeliteSkooriÜhikud.add(edetabel.leiaSkooriÜhik(this));
             edetabeliteKohad.append("[ ").append(edetabel.leiaKoht(this) + 1).append(". ] ");
+
+            parimadSkoorid.add(edetabel.leiaTulemus(0));
         }
 
         StringBuilder edetabeliteTulemused = new StringBuilder();
 
         for (int i = 0; i < edetabeliteSkoorid.size(); i++) {
             List<String> tulemus = new ArrayList<>();
+            List<String> parimTulemus = new ArrayList<>();
 
             for (int j = 0; j < edetabeliteSkoorid.get(i).size(); j++) {
                 String t = edetabeliteSkoorid.get(i).get(j) + " " + edetabeliteSkooriÜhikud.get(i).get(j);
-
                 tulemus.add(t.trim());
+
+                String w = parimadSkoorid.get(i).get(j) + " " + edetabeliteSkooriÜhikud.get(i).get(j);
+                parimTulemus.add(w.trim());
             }
 
-            edetabeliteTulemused.append("  ").append(tulemus).append("\n");
+            // Tulemus
+            edetabeliteTulemused.append("  ").append(tulemus);
+
+            // Parim tulemus
+            edetabeliteTulemused.append(" ".repeat(18 - String.valueOf(tulemus).length()));
+            if (!parimTulemus.equals(tulemus)) {
+                edetabeliteTulemused.append("(Parim : ").append(parimTulemus).append(")");
+            } else {
+                edetabeliteTulemused.append("(Parim või samaväärne tulemus!)");
+            }
+
+            edetabeliteTulemused.append("\n");
         }
 
         // Juhendaja
@@ -92,17 +111,17 @@ public class Osaleja {
 
 
         return String.format("""
-                %s%s, ID : %s
-                - Osaleb edetabelites :
-                %s
-                - Tulemused : 
-                %s
-                - Kohad :
-                  %s
-                  
-                - ELO :
-                  %s. %s %s
-                """,
+                        %s%s, ID : %s
+                        - Osaleb edetabelites :
+                        %s
+                        - Tulemused :
+                        %s
+                        - Kohad :
+                          %s
+                          
+                        - ELO :
+                          %s. %s %s
+                        """,
                 nimi,
                 lisa,
                 id,
