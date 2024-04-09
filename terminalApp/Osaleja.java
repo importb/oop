@@ -6,7 +6,8 @@ public class Osaleja {
     private final int id;
     private final String nimi;
     private final boolean juhendaja;
-    private List<terminalApp.Edetabel> edetabelid = new ArrayList<>();
+    private List<Edetabel> edetabelid = new ArrayList<>();
+    private Edetabel ELOEdetabel;
 
     public Osaleja(int id, String nimi, boolean juhendaja) {
         this.id = id;
@@ -22,6 +23,10 @@ public class Osaleja {
         return id;
     }
 
+    public boolean isJuhendaja() {
+        return juhendaja;
+    }
+
     public static double easeInCubic(double x) {
         return x * x * x;
     }
@@ -35,7 +40,7 @@ public class Osaleja {
     public float arvutaELO() {
         float ELO = 100;
 
-        for (terminalApp.Edetabel edetabel : edetabelid) {
+        for (Edetabel edetabel : edetabelid) {
             int koht = edetabel.leiaKoht(this);
             int kohtiKokku = edetabel.getOsalejad().size();
 
@@ -45,10 +50,13 @@ public class Osaleja {
         return ELO;
     }
 
-    public void lisaEdetabel(terminalApp.Edetabel edetabel) {
+    public void lisaEdetabel(Edetabel edetabel) {
         edetabelid.add(edetabel);
     }
 
+    public void lisaELOEdetabel(Edetabel edetabel) {
+        ELOEdetabel = edetabel;
+    }
 
     public String toString() {
         // Edetabelid
@@ -57,7 +65,7 @@ public class Osaleja {
         List<List<String>> edetabeliteSkoorid = new ArrayList<>();
         List<List<String>> edetabeliteSkooriÜhikud = new ArrayList<>();
 
-        for(terminalApp.Edetabel edetabel : edetabelid) {
+        for(Edetabel edetabel : edetabelid) {
             edetabeliteNimed.append("  [ ").append(edetabel.getNimi()).append(" ]\n");
             edetabeliteSkoorid.add(edetabel.leiaTulemus(this));
             edetabeliteSkooriÜhikud.add(edetabel.leiaSkooriÜhik(this));
@@ -80,11 +88,11 @@ public class Osaleja {
 
         // Juhendaja
         String lisa = "";
-        if (juhendaja) lisa = "(Juh.)";
+        if (juhendaja) lisa = " (Juh.)";
 
 
         return String.format("""
-                %s %s, ID : %s
+                %s%s, ID : %s
                 - Osaleb edetabelites :
                 %s
                 - Tulemused : 
@@ -93,7 +101,16 @@ public class Osaleja {
                   %s
                   
                 - ELO :
-                  %s
-                """, nimi, lisa, id, edetabeliteNimed, edetabeliteTulemused, edetabeliteKohad, arvutaELO());
+                  %s. %s %s
+                """,
+                nimi,
+                lisa,
+                id,
+                edetabeliteNimed,
+                edetabeliteTulemused,
+                edetabeliteKohad,
+                ELOEdetabel.leiaKoht(this) + 1,
+                ELOEdetabel.leiaTulemus(this).getFirst(),
+                ELOEdetabel.getSkooriÜhikud().getFirst().getFirst());
     }
 }

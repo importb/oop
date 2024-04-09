@@ -1,8 +1,6 @@
 package terminalApp;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class PHXC {
     static List<terminalApp.Edetabel> edetabelid = new ArrayList<>();
@@ -24,6 +22,62 @@ public class PHXC {
         return true;
     }
 
+    public static Edetabel koostaELOEdetabel(List<Osaleja> osalejad) {
+        float[][] sortimiseks = new float[osalejad.size()][2];
+        List<List<String>> skooriühikud = new ArrayList<>();
+        Edetabel ELOedetabel = new Edetabel(999);
+        ELOedetabel.setNimi("ELO");
+
+        int i = 0;
+        for (Osaleja osaleja : osalejad) {
+            skooriühikud.add(Collections.singletonList("p"));
+
+            osaleja.arvutaELO();
+
+            sortimiseks[i][1] = osaleja.arvutaELO();
+            sortimiseks[i][0] = osaleja.getId();
+            i++;
+        }
+        Arrays.sort(sortimiseks, Comparator.comparingDouble(a -> a[1]));
+
+        List<String> osalejadNimed = new ArrayList<>();
+        List<String> osalejadELO = new ArrayList<>();
+
+        for (int j = sortimiseks.length - 1; j >= 0; j--) {
+            float[] s = sortimiseks[j];
+            int id = (int) s[0];
+
+            for (Osaleja osaleja : osalejad) {
+                if (osaleja.getId() == id) {
+                    String nimi = osaleja.getNimi();
+
+                    if (osaleja.isJuhendaja()) nimi += " (Juh)";
+
+                    osalejadNimed.add(nimi);
+                    osalejadELO.add(String.valueOf(osaleja.arvutaELO()));
+                }
+            }
+        }
+
+        // Tulemused viimane list.
+        List<List<String>> tulemused = new ArrayList<>();
+        for(String ELO : osalejadELO) {
+            tulemused.add(Collections.singletonList(ELO));
+        }
+
+        // lisa edetabelisse.
+        ELOedetabel.setTulemused(tulemused);
+        ELOedetabel.setOsalejad(osalejadNimed);
+        ELOedetabel.setSkooriÜhikud(skooriühikud);
+
+        // Lisa osalejatele
+        for(Osaleja osaleja : osalejad) osaleja.lisaELOEdetabel(ELOedetabel);
+
+        // lisa edetabelid listi
+        edetabelid.addFirst(ELOedetabel);
+
+        return ELOedetabel;
+    }
 
     /**
      * Leia osaleja nime järgi
@@ -86,6 +140,9 @@ public class PHXC {
                 }
             }
         }
+
+        // ELO edetabel
+        koostaELOEdetabel(osalejad);
     }
 
 
@@ -136,6 +193,9 @@ public class PHXC {
                             break;
                         }
                     }
+                    break;
+                case "3":
+                    System.out.println(edetabelid.getFirst());
                     break;
                 case "x":
                     running = false;
