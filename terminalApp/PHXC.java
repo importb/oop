@@ -22,7 +22,7 @@ public class PHXC {
         return true;
     }
 
-    public static Edetabel koostaELOEdetabel(List<Osaleja> osalejad) {
+    public static void koostaELOEdetabel(List<Osaleja> osalejad) {
         float[][] sortimiseks = new float[osalejad.size()][2];
         List<List<String>> skooriühikud = new ArrayList<>();
         Edetabel ELOedetabel = new Edetabel(999);
@@ -75,8 +75,6 @@ public class PHXC {
 
         // lisa edetabelid listi
         edetabelid.addFirst(ELOedetabel);
-
-        return ELOedetabel;
     }
 
     /**
@@ -149,26 +147,43 @@ public class PHXC {
     public static void main(String[] args) {
         // initialize.
         init();
+        int praeguneEdetabel = 1;
 
         boolean running = true;
         while (running) {
             Scanner sisend = new Scanner(System.in);
-            System.out.print("[1] - Vaata ülesande edetabelit\n[2] - Leia osaleja\n[3] - ELO edetabel\n[x] - Exit\n");
+            System.out.print("[1] - Vaata edetabeleid\n[2] - Vaata ülesande edetabelit\n[3] - Leia osaleja\n[4] - ELO edetabel\n[x] - Exit\n");
             String tegevus = sisend.nextLine().toLowerCase();
 
             switch (tegevus) {
                 case "1":
+                    while(true) {
+                        System.out.println(edetabelid.get(praeguneEdetabel));
+                        System.out.println("[v] - Järgmine");
+                        System.out.println("[c] - Eelmine");
+                        System.out.println("[x] - Tagasi");
+                        String tegevus1 = sisend.nextLine();
+
+                        if (tegevus1.equals("x")) {
+                            praeguneEdetabel = 1;
+                            break;
+                        }
+                        if (tegevus1.equals("c")) praeguneEdetabel = Math.max(1, praeguneEdetabel - 1);
+                        if (tegevus1.equals("v")) praeguneEdetabel = Math.min(edetabelid.size() - 1, praeguneEdetabel + 1);
+                    }
+                    break;
+                case "2":
                     System.out.println("Millist edetabelit soovite näha? (id / nimi)");
-                    String case1antud = sisend.nextLine();
+                    String tegevus2 = sisend.nextLine();
 
                     terminalApp.Edetabel edetabel = null;
 
-                    if (kasOnNumber(case1antud)) {
-                        int number = Math.max(1, Math.min(edetabelid.size() - 1, Integer.parseInt(case1antud)));
+                    if (kasOnNumber(tegevus2)) {
+                        int number = Math.max(1, Math.min(edetabelid.size() - 1, Integer.parseInt(tegevus2)));
                         edetabel = edetabelid.get(number);
                     } else {
                         for (terminalApp.Edetabel e : edetabelid) {
-                            if (e.getNimi().equals(case1antud)) {
+                            if (e.getNimi().equals(tegevus2)) {
                                 edetabel = e;
                                 break;
                             }
@@ -182,7 +197,7 @@ public class PHXC {
                         System.out.println("Sellise nimega edetabelit ei leitud.");
                     }
                     break;
-                case "2":
+                case "3":
                     System.out.print("Osaleja nimi: ");
                     String osalejaLeidmine = sisend.nextLine().toLowerCase();
                     System.out.println();
@@ -194,7 +209,7 @@ public class PHXC {
                         }
                     }
                     break;
-                case "3":
+                case "4":
                     System.out.println(edetabelid.getFirst());
                     break;
                 case "x":
