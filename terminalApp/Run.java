@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -13,37 +14,40 @@ import java.util.Scanner;
 public class Run {
     /**
      * Loeb faili read.
+     *
      * @param failiAsukoht - faili asukoht
      * @return - faili read massiivis
      */
-    public static String[] loeFailiRead(String failiAsukoht) {
-        StringBuilder vastus = new StringBuilder();
+    public static List<byte[]> loeFailiRead(String failiAsukoht) {
+        List<byte[]> vastus = new ArrayList<>();
         File fail = new File(failiAsukoht);
         try {
             Scanner lugeja = new Scanner(fail, StandardCharsets.UTF_8);
 
             while (lugeja.hasNextLine()) {
-                vastus.append(lugeja.nextLine()).append("\n");
-            }
+                byte[] rida = lugeja.nextLine().stripTrailing().getBytes(StandardCharsets.UTF_8);
 
+                vastus.add(rida);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return vastus.toString().split("\n");
+        return vastus;
     }
 
     /**
      * Kirjuta faili read
+     *
      * @param failiAsukoht - faili asukoht
-     * @param read - read listis.
+     * @param read         - read listis.
      */
-    public static void kirjutaFaili(String failiAsukoht, List<String> read) {
+    public static void kirjutaFaili(String failiAsukoht, List<byte[]> read) {
         try {
             File fail = new File(failiAsukoht);
             FileWriter kirjutaja = new FileWriter(fail, false);
 
-            for(String rida : read) {
-                kirjutaja.write(rida);
+            for (byte[] rida : read) {
+                kirjutaja.write(new String(rida));
                 kirjutaja.write("\n");
             }
 
@@ -55,82 +59,66 @@ public class Run {
 
 
     public static void main(String[] args) {
-        System.out.println("Kontrollin kas on uusim versioon.");
+        System.out.println("Kontrollime GitHub-ist, kas uuendusi on.");
 
         // mida kontrollime
-        String[] terminalAppCheck = {"Edetabel.java", "Kaabitseja.java", "Osaleja.java", "PHXC.java", "README.md"};
-        String[] kaabitsejaCheck = {"Main.java", "README.md"};
+        String[] toCheck = {"terminalApp/Edetabel.java", "terminalApp/Kaabitseja.java", "terminalApp/Osaleja.java", "terminalApp/PHXC.java", "terminalApp/README.md", "kaabitseja/README.md", "kaabitseja/Main.java"};
+        List<String> muutaVaja = new ArrayList<>();
+        List<List<byte[]>> uusKood = new ArrayList<>();
 
-        // listid
-        List<String> terminalAppUuendustVajavad = new ArrayList<>();
-        List<List<String>> terminalAppUuendustVajavadKood = new ArrayList<>();
-        List<String> kaabitsejaUuendustVajavad = new ArrayList<>();
-        List<List<String>> kaabitsejaUuendustVajavadKood = new ArrayList<>();
-
-        for (String kood : terminalAppCheck) {
-            HttpResponse<String> githubiKood = Kaabitseja.kaabitseLehekülge("https://raw.githubusercontent.com/im-byte/oop/main/terminalApp/" + kood);
-
-            if (githubiKood != null) {
-                String[] github = githubiKood.body().split("\n");
-                String[] praegune = loeFailiRead("terminalApp/" + kood);
-
-                for (int i = 0; i < github.length; i++) {
-                    if (!github[i].stripTrailing().equals(praegune[i].stripTrailing())) {
-                        terminalAppUuendustVajavad.add(kood);
-                        terminalAppUuendustVajavadKood.add(List.of(github));
-                        break;
-                    }
-                }
+        for (String fail : toCheck) {
+            // Loeme github-i koodi
+            HttpResponse<String> githubiKood = Kaabitseja.kaabitseLehekülge("https://raw.githubusercontent.com/im-byte/oop/main/" + fail);
+            List<byte[]> githubiKoodBytes = new ArrayList<>();
+            for (String rida : githubiKood.body().split("\n")) {
+                githubiKoodBytes.add(rida.stripTrailing().getBytes(StandardCharsets.UTF_8));
             }
-        }
-        for (String kood : kaabitsejaCheck) {
-            HttpResponse<String> githubiKood = Kaabitseja.kaabitseLehekülge("https://raw.githubusercontent.com/im-byte/oop/main/kaabitseja/" + kood);
 
-            if (githubiKood != null) {
-                String[] github = githubiKood.body().split("\n");
-                String[] praegune = loeFailiRead("kaabitseja/" + kood);
+            // Loeme lokaalse koodi
+            List<byte[]> praeguneKoodBytes = loeFailiRead(fail);
 
-                for (int i = 0; i < github.length; i++) {
-                    if (!github[i].stripTrailing().equals(praegune[i].stripTrailing())) {
-                        kaabitsejaUuendustVajavad.add(kood);
-                        kaabitsejaUuendustVajavadKood.add(List.of(github));
-                        break;
-                    }
+            // Võrdleme
+            for (int i = 0; i < Math.min(praeguneKoodBytes.size(), githubiKoodBytes.size()); i++) {
+                if (!Arrays.equals(praeguneKoodBytes.get(i), githubiKoodBytes.get(i))) {
+                    muutaVaja.add(fail);
+                    uusKood.add(githubiKoodBytes);
+                    break;
                 }
             }
         }
 
+        if (!muutaVaja.isEmpty()) {
+            System.out.println("--------------------------------");
+            System.out.println("Uus versioon saadaval GitHub-is.");
+            System.out.println();
+            System.out.println("Failid, mida muudetakse:");
 
-        if (!terminalAppUuendustVajavad.isEmpty() || !kaabitsejaUuendustVajavad.isEmpty()) {
-            System.out.println("Github-is on uus versioon saadaval, kas soovite uuendada?");
-            System.out.print("terminalApp-is muutuvad : ");
-            System.out.println(terminalAppUuendustVajavad);
-            System.out.print("kaabitsejas-is muutuvad : ");
-            System.out.println(kaabitsejaUuendustVajavad);
-            System.out.println("Tõmbame uuenduse? (y/n)");
+            for(String m : muutaVaja) {
+                System.out.println("- " + m);
+            }
+            System.out.println();
+            System.out.println("Kas uuendame? (y/n)");
+            System.out.print("Tegevus: ");
             Scanner sisend = new Scanner(System.in);
             String tegevus = sisend.nextLine().toLowerCase();
 
             if (tegevus.equals("y")) {
+                System.out.println();
                 int i = 0;
-                for(String fail : terminalAppUuendustVajavad) {
-                    System.out.println("Uuendan : " + fail);
-                    kirjutaFaili("terminalApp/" + fail, terminalAppUuendustVajavadKood.get(i));
+                for(String fail : muutaVaja) {
+                    System.out.println("Uuendan: " + fail);
+                    kirjutaFaili(fail, uusKood.get(i));
                     i++;
                 }
-                int j = 0;
-                for(String fail : kaabitsejaUuendustVajavad) {
-                    System.out.println("Uuendan : " + fail);
-                    kirjutaFaili("kaabitseja/" + fail, kaabitsejaUuendustVajavadKood.get(i));
-                    j++;
-                }
-                System.out.println("Uuendus tehtud!");
-                System.out.println();
+                System.out.println("\nUuendatud!");
             }
+            System.out.println("--------------------------------");
+            System.out.println();
         } else {
-            System.out.println("Praegu on uusim versioon!");
+            System.out.println("Uuendusi pole.");
             System.out.println();
         }
+
 
         // jooksuta peamine programm.
         PHXC.main(args);
