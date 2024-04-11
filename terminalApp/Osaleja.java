@@ -24,6 +24,10 @@ public class Osaleja {
         return id;
     }
 
+    public List<Edetabel> getEdetabelid() {
+        return edetabelid;
+    }
+
     public boolean isJuhendaja() {
         return juhendaja;
     }
@@ -112,7 +116,7 @@ public class Osaleja {
 
         return String.format("""
                         %s%s, ID : %s
-                        - Osaleb edetabelites :
+                        - Osaleb edetabelites (%s):
                         %s
                         - Tulemused :
                         %s
@@ -125,6 +129,7 @@ public class Osaleja {
                 nimi,
                 lisa,
                 id,
+                edetabelid.size(),
                 edetabeliteNimed,
                 edetabeliteTulemused,
                 edetabeliteKohad,

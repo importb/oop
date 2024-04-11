@@ -74,7 +74,7 @@ public class Edetabel {
             i++;
         }
 
-        return 0;
+        return -1;
     }
 
     public String toString() {

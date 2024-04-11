@@ -69,20 +69,23 @@ public class Run {
         for (String fail : toCheck) {
             // Loeme github-i koodi
             HttpResponse<String> githubiKood = Kaabitseja.kaabitseLehekülge("https://raw.githubusercontent.com/im-byte/oop/main/" + fail);
-            List<byte[]> githubiKoodBytes = new ArrayList<>();
-            for (String rida : githubiKood.body().split("\n")) {
-                githubiKoodBytes.add(rida.stripTrailing().getBytes(StandardCharsets.UTF_8));
-            }
 
-            // Loeme lokaalse koodi
-            List<byte[]> praeguneKoodBytes = loeFailiRead(fail);
+            if (githubiKood != null) {
+                List<byte[]> githubiKoodBytes = new ArrayList<>();
+                for (String rida : githubiKood.body().split("\n")) {
+                    githubiKoodBytes.add(rida.stripTrailing().getBytes(StandardCharsets.UTF_8));
+                }
 
-            // Võrdleme
-            for (int i = 0; i < Math.min(praeguneKoodBytes.size(), githubiKoodBytes.size()); i++) {
-                if (!Arrays.equals(praeguneKoodBytes.get(i), githubiKoodBytes.get(i))) {
-                    muutaVaja.add(fail);
-                    uusKood.add(githubiKoodBytes);
-                    break;
+                // Loeme lokaalse koodi
+                List<byte[]> praeguneKoodBytes = loeFailiRead(fail);
+
+                // Võrdleme
+                for (int i = 0; i < Math.min(praeguneKoodBytes.size(), githubiKoodBytes.size()); i++) {
+                    if (!Arrays.equals(praeguneKoodBytes.get(i), githubiKoodBytes.get(i))) {
+                        muutaVaja.add(fail);
+                        uusKood.add(githubiKoodBytes);
+                        break;
+                    }
                 }
             }
         }
@@ -97,7 +100,7 @@ public class Run {
                 System.out.println("- " + m);
             }
             System.out.println();
-            System.out.println("Kas uuendame? (y/n)");
+            System.out.println("Kas soovite uuendada? (y/n)");
             System.out.print("Tegevus: ");
             Scanner sisend = new Scanner(System.in);
             String tegevus = sisend.nextLine().toLowerCase();
