@@ -153,7 +153,7 @@ public class PHXC {
         boolean running = true;
         while (running) {
             Scanner sisend = new Scanner(System.in);
-            System.out.print("[1] - Vaata ülesannete edetabeleid\n[2] - Edetabeli otsing\n[3] - Osaleja otsing\n[4] - ELO edetabel\n[x] - Exit\n");
+            System.out.print("[1] - Vaata ülesannete edetabeleid\n[2] - Edetabeli otsing\n[3] - Osaleja otsing\n[4] - ELO edetabel\n[5] - Statistika\n[x] - Exit\n");
             String tegevus = sisend.nextLine().toLowerCase();
 
             switch (tegevus) {
