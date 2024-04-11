@@ -189,7 +189,7 @@ public class Main {
             }
 
             System.out.println(relevantsedEdetabelid);
-            StringBuilder päring = new StringBuilder("insert into data (edetabel_id, edetabel_nimi, osaleja, skoor, aeg) values ");
+            StringBuilder päring = new StringBuilder("insert into data (edetabel_id, edetabel_nimi, osaleja, skoor, skoor2, aeg) values ");
 
             int addedCount = 0;
 
@@ -204,14 +204,25 @@ public class Main {
                     päring.append(", ");
                 }
 
-                päring.append(String.format("(%d, \"%s\", \"%s\", %.2f, \"%s\")",
-                                jsonobject.getInt("edetabel_id"),
-                                jsonobject.getString("edetabel_nimi"),
-                                jsonobject.getString("osaleja"),
-                                jsonobject.getFloat("skoor"),
-                                jsonobject.getString("timestamp")
-                        )
-                );
+                // kui meil on ühe skooriga edetabel
+                if (jsonobject.isNull("skoor2")) {
+                    päring.append(String.format("(%d, \"%s\", \"%s\", %.2f, NULL, \"%s\")",
+                        jsonobject.getInt("edetabel_id"),
+                        jsonobject.getString("edetabel_nimi"),
+                        jsonobject.getString("osaleja"),
+                        jsonobject.getFloat("skoor"),
+                        jsonobject.getString("timestamp")
+                    ));
+                } else {
+                    päring.append(String.format("(%d, \"%s\", \"%s\", %.2f, %.2f, \"%s\")",
+                    jsonobject.getInt("edetabel_id"),
+                    jsonobject.getString("edetabel_nimi"),
+                    jsonobject.getString("osaleja"),
+                    jsonobject.getFloat("skoor"),
+                    jsonobject.getFloat("skoor2"),
+                    jsonobject.getString("timestamp")
+                ));
+                }
                 addedCount++;
             }
 
