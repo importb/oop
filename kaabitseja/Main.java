@@ -299,7 +299,7 @@ public class Main {
                 String JSON = String.format(
                         "{\"timestamp\":\"%s\", \"edetabel_id\":%s, \"edetabel_nimi\":\"%s\", \"osaleja\":\"%s\", \"skoor\":%s, \"skooriühik\":%s, \"skoor2\":%s, \"skooriühik2\":%s}",
                         now,
-                        i,
+                        i+1,
                         edetabeliNimi,
                         osalejaNimi,
                         skoor1,
