@@ -44,3 +44,92 @@ Programmis saab vaadelda edetabeleid, üksikute osalejate tulemusi, millistest e
 
 Klasside ja funktsioonide info: 
 [Klassid, funktsioonid](terminalApp/README.md)
+
+# Rühmatöö 2
+
+Kolmekihiline Next.js / Spring Boot / MySQL rakendus, mis näitab kokkuvõtteid terve kursuse peale
+
+## Front end features (in progress)
+
+### 1. ELO edetabeli visualiseerimine
+
+Potentsiaalne lahendus:
+* API endpoint /users
+* Iga nädala lõpus kirjutame uude DB tabelisse uuesti arvutatud ELO seisu (nt Cron-iga)
+* Tagastab: 
+
+```js
+[
+    {
+        pseudoname: <String>,
+        ELO: <Float>,
+        results: [
+            {
+                edetabelNimi: <String>,
+                skoor1: <Float>,
+                skoor1Unit: <String>,
+                skoor2: <Float | NULL>,
+                skoor2Unit: <String | NULL> 
+            },
+            // ...
+        ]
+    },
+    {
+        pseudoname: <String>,
+        ELO: <Float>,
+        results: [
+            // ...
+        ]
+    },
+    // .....
+]
+```
+
+### 2. Ühe kindla kasutaja tulemused
+
+Potentsiaalne lahendus:
+* API endpoint /users/{pseudo}
+* Getib andmebaasist kõik selle kasutaja tulemused (igast edetabelist, vali viimane timestamp ja sorteeri kõik tulemused ning ütle, mitmes see kasutaja on)
+* Tagastab:
+
+```js
+{
+    pseudoname: <String>,
+    ELO: <Float>,
+    results: [
+        {
+            edetabelNimi: <String>,
+            skoor1: <Float>,
+            skoor1Unit: <String>,
+            skoor2: <Float | NULL>,
+            skoor2Unit: <String | NULL> 
+        },
+        // ...
+    ]
+},
+```
+
+### 3. Ühe edetabeli ajas visualiseerimine
+
+Kuna iga 5 minuti tagant on scrapetud, siis saame näidata animatsioonidega, kuidas ajas need tulemused muutusid
+
+Potentsiaalne lahendus:
+* API endpoint /results/{edetabel_nimi}
+* Tagastab kasvavas järjekorras timestampidega:
+
+```js
+[
+    {
+        timestamp: <UNIX timestamp>,
+        results: [
+            {
+                pseudo: <String>,
+                skoor1: <Float>,
+                skoor1Unit: <String>,
+                skoor2: <Float | NULL>,
+                skoor2Unit: <String | NULL>
+            }
+        ]
+    }
+]
+```
