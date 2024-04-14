@@ -230,22 +230,6 @@ public class PHXC {
                         }
                     }
 
-                    // parim %
-                    float parimProtsent = 0;
-                    String parimProtsentOsaleja = "";
-                    String parimProtsentEdetabel = "";
-                    for (Edetabel e : edetabelid) {
-                        float skoor1 = Float.parseFloat(e.leiaTulemus(0).getFirst());
-                        float skoor2 = Float.parseFloat(e.leiaTulemus(1).getFirst());
-                        float vahe = (skoor2 / skoor1) * 100;
-
-                        if (vahe > parimProtsent) {
-                            parimProtsent = vahe;
-                            parimProtsentOsaleja = e.getOsalejad().getFirst();
-                            parimProtsentEdetabel = e.getNimi();
-                        }
-                    }
-
                     // parim keskmine koht
                     float parimKeskmineKoht = Float.MAX_VALUE;
                     String parimKeskmineNimi = "";
@@ -281,9 +265,6 @@ public class PHXC {
                                     - Kõige rohkem ülesandeid lahendanud. (Lahendanud: %s)
                                       %s
                                       
-                                    - Kõige parema saavutuse saanud %% poolest.
-                                      %s, Edetabel: %s, Protsent: %s%%
-                                      
                                     - Kõige parema keskmise kohaga osaleja:
                                       %s, keskmine koht: %.4f
                                     
@@ -294,9 +275,6 @@ public class PHXC {
                             edetabelid.size() - 1,
                             suurim,
                             nimed,
-                            parimProtsentOsaleja,
-                            parimProtsentEdetabel,
-                            parimProtsent,
                             parimKeskmineNimi,
                             parimKeskmineKoht,
                             edetabelid.getFirst().getOsalejad().getFirst(),

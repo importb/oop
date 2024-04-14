@@ -97,9 +97,17 @@ public class Main {
                     }
 
                     if (line.contains("skoor\"")) {
-                        String[] skooriAndmed = line.substring(20, line.length() - 7)
-                                .replace("<span class=\"komakoht\">", "")
-                                .replace("</span>", "").split(" ");
+                        String skoor = line.substring(20, line.length() - 7)
+                                .replace("<span class=\"komakoht\">", "");
+                        String[] skooriAndmed;
+
+
+                        if (!line.contains("(")) {
+
+                            skooriAndmed = skoor.replace("</span>", "").split(" ");
+                        } else {
+                            skooriAndmed = new String[]{skoor.replace("</span>", "")};
+                        }
 
                         // skoor
                         osalejaSkoorid.add(skooriAndmed[0]);
@@ -272,6 +280,7 @@ public class Main {
             for (int j = 0; j < osalejad.get(i).size(); j++) {
                 // ava fail kirjutamiseks
                 File fail = new File(kaust + "data_" + now + ".txt");
+                fail = new File("data.txt");
                 FileWriter kirjutaja = new FileWriter(fail, true);
 
                 // osaleja andmed
@@ -280,8 +289,9 @@ public class Main {
                 List<String> osalejaSkooriühikud = skooriühikud.get(i).get(j);
 
                 // skoor 1
-                Float skoor1 = Float.valueOf(osalejaSkoorid.get(0));
-                String skooriÜhik1 = osalejaSkooriühikud.get(0);
+                // Float skoor1 = Float.valueOf(osalejaSkoorid.get(0).replaceAll("[^0-9]", ""));
+                String skoor1 = osalejaSkoorid.getFirst();
+                String skooriÜhik1 = osalejaSkooriühikud.getFirst();
 
                 if (skooriÜhik1.isEmpty()) skooriÜhik1 = "NULL";
                 else skooriÜhik1 = "\"" + skooriÜhik1 + "\"";
@@ -291,13 +301,13 @@ public class Main {
                 String skooriÜhik2 = "NULL";
 
                 if (osalejaSkoorid.size() > 1) {
-                    skoor2 = String.valueOf(Float.valueOf(osalejaSkoorid.get(1)));
+                    skoor2 = osalejaSkoorid.get(1);
                     skooriÜhik2 = "\"" + osalejaSkooriühikud.get(1) + "\"";
                 }
 
                 // ava fail kirjutamiseks
                 String JSON = String.format(
-                        "{\"timestamp\":\"%s\", \"edetabel_id\":%s, \"edetabel_nimi\":\"%s\", \"osaleja\":\"%s\", \"skoor\":%s, \"skooriühik\":%s, \"skoor2\":%s, \"skooriühik2\":%s}",
+                        "{\"timestamp\":\"%s\", \"edetabel_id\":%s, \"edetabel_nimi\":\"%s\", \"osaleja\":\"%s\", \"skoor\":\"%s\", \"skooriühik\":%s, \"skoor2\":\"%s\", \"skooriühik2\":%s}",
                         now,
                         i+1,
                         edetabeliNimi,
@@ -317,6 +327,6 @@ public class Main {
         }
 
         System.out.println("Kirjutatud faili!");
-        writeDataToDatabase(JSONdata, kaust);
+        //writeDataToDatabase(JSONdata, kaust);
     }
 }
