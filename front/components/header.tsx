@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Header(props: object) {
 
@@ -8,7 +9,7 @@ export default function Header(props: object) {
 
   return <div className="flex flex-row justify-between w-full h-24 bg-gradient-to-r from-red-700 to-violet-500">
 
-    <h1 className="pl-8 my-auto font-semibold text-3xl">Programmeerimine II Hall of Fame</h1>
+    <Link href="/" className="pl-8 my-auto font-semibold text-3xl">Programmeerimine II Hall of Fame</Link>
 
     <div className="flex flex-row h-8 w-80 my-auto bg-white border-slate-300 border-2 rounded-2xl">
       <svg xmlns="http://www.w3.org/2000/svg" fill="rgb(203, 213, 225)" height="24" viewBox="0 -960 960 960" width="24" className="my-auto mx-1">
@@ -16,7 +17,7 @@ export default function Header(props: object) {
       </svg>
 
       <input
-        className="mr-1 text-black focus:outline-none"
+        className="w-full mr-3 text-black focus:outline-none"
         placeholder="Otsi ülesannet või osalejat"
         value={searchItem}
         onChange={(e) => {
@@ -24,13 +25,18 @@ export default function Header(props: object) {
         }}
       />
     </div>
-
-    <Image 
-      src={"/bioskullr.gif"}
-      alt={"Vaheta teemat"}
-      width={100}
-      height={30}
-    />
+    <button 
+      onClick={() => {
+        alert("🤠")
+      }}
+    >
+      <Image
+        src={"/bioskullr.gif"}
+        alt={"Vaheta teemat"}
+        width={100}
+        height={30}
+      />
+    </button>
 
 
   </div>
