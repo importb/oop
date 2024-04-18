@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 import Header from "@/components/header";
 
 export const metadata: Metadata = {
-  title: "Programmeerimine II kaapija"
+  title: "Programmeerimine II Hall of Fame"
 };
 
 export default function RootLayout({
