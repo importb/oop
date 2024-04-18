@@ -214,20 +214,20 @@ public class Main {
 
                 // kui meil on ühe skooriga edetabel
                 if (jsonobject.isNull("skoor2")) {
-                    päring.append(String.format("(%d, \"%s\", \"%s\", %.2f, NULL, \"%s\")",
+                    päring.append(String.format("(%d, \"%s\", \"%s\", \"%s\", NULL, \"%s\")",
                         jsonobject.getInt("edetabel_id"),
                         jsonobject.getString("edetabel_nimi"),
                         jsonobject.getString("osaleja"),
-                        jsonobject.getFloat("skoor"),
+                        jsonobject.getString("skoor"),
                         jsonobject.getString("timestamp")
                     ));
                 } else {
-                    päring.append(String.format("(%d, \"%s\", \"%s\", %.2f, %.2f, \"%s\")",
+                    päring.append(String.format("(%d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")",
                     jsonobject.getInt("edetabel_id"),
                     jsonobject.getString("edetabel_nimi"),
                     jsonobject.getString("osaleja"),
-                    jsonobject.getFloat("skoor"),
-                    jsonobject.getFloat("skoor2"),
+                    jsonobject.getString("skoor"),
+                    jsonobject.getString("skoor2"),
                     jsonobject.getString("timestamp")
                 ));
                 }
@@ -290,8 +290,8 @@ public class Main {
 
                 // skoor 1
                 // Float skoor1 = Float.valueOf(osalejaSkoorid.get(0).replaceAll("[^0-9]", ""));
-                String skoor1 = osalejaSkoorid.getFirst();
-                String skooriÜhik1 = osalejaSkooriühikud.getFirst();
+                String skoor1 = osalejaSkoorid.get(0);
+                String skooriÜhik1 = osalejaSkooriühikud.get(0);
 
                 if (skooriÜhik1.isEmpty()) skooriÜhik1 = "NULL";
                 else skooriÜhik1 = "\"" + skooriÜhik1 + "\"";
@@ -327,6 +327,6 @@ public class Main {
         }
 
         System.out.println("Kirjutatud faili!");
-        //writeDataToDatabase(JSONdata, kaust);
+        writeDataToDatabase(JSONdata, kaust);
     }
 }
