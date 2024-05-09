@@ -1,11 +1,58 @@
 "use client"
-import { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Image from "next/image";
 import Link from "next/link";
+import "@/utils/types";
+
+async function getSearchables(): Promise<Searchables> {
+  // halb, et peab requeste duplikeerima / lehelt
+  const usersResponse: Response = await fetch("http://localhost:8080/users");
+
+  if (!usersResponse.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  const users: UserList = await usersResponse.json();
+
+  const tasksResponse: Response = await fetch("http://localhost:8080/tasks");
+  if (!tasksResponse.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  const tasks: TaskList = await tasksResponse.json();
+
+
+  const searchables: Searchables = [
+    ...users.map((user) => ({
+      type: 'user' as 'user',
+      value: user.pseudoname
+    })),
+    ...tasks.map((task) => ({
+      type: 'task' as 'task',
+      value: task.edetabelNimi
+    }))
+  ];
+
+
+  return searchables;
+}
 
 export default function Header(props: object) {
 
+
   const [searchItem, setSearchItem] = useState("");
+  const [searchables, setSearchables] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  
+  useEffect(() => {
+
+  }, [searchItem]);
+
+  useEffect(() => {
+    const a = async () => {
+      // const fetchedSearchables: Searchables = await getSearchables();
+      // setSearchables(fetchedSearchables);
+    }
+    a();
+  }, [])
 
   return <div className="flex flex-row justify-between w-full h-24 bg-gradient-to-r from-red-700 to-violet-500">
 
@@ -25,7 +72,7 @@ export default function Header(props: object) {
         }}
       />
     </div>
-    <button 
+    <button
       onClick={() => {
         alert("🤠")
       }}

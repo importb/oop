@@ -13,3 +13,17 @@ interface User {
 }
 
 type UserList = User[];
+
+interface Task {
+    edetabelNimi: string;
+    userCount: number;
+}
+
+type TaskList = Task[];
+
+interface Searchable {
+   type: 'user' | 'task';
+   value: string;
+}
+
+type Searchables = Searchable[];
