@@ -1,13 +1,14 @@
 interface Result {
-    edetabelNimi: string;
+    edetabel_nimi: string;
     skoor1: number;
     skoor1Unit: string;
     skoor2: number | null;
     skoor2Unit: string | null;
+    koht: number | undefined;
 }
 
 interface User {
-    pseudoname: string;
+    osaleja: string;
     ELO: number;
     results: Result[];
 }

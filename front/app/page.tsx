@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 async function getUsers(): Promise<UserList> {
-  const res: Response = await fetch("http://localhost:8080/users");
+  const res: Response = await fetch("http://localhost:8080/osalejateEdetabel");
 
   if (!res.ok) {
     throw new Error("Failed to fetch data");
@@ -15,11 +15,15 @@ async function getUsers(): Promise<UserList> {
 
   const users: UserList = await res.json();
 
+  users.sort((u1, u2) => u2.ELO - u1.ELO);
+
+  // console.log(users);
+
   return users;
 }
 
 async function getTasks(): Promise<TaskList> {
-  const res: Response = await fetch("http://localhost:8080/tasks");
+  const res: Response = await fetch("http://localhost:8080/ulesanded");
 
   if (!res.ok) {
     throw new Error("Failed to fetch data");
@@ -30,243 +34,12 @@ async function getTasks(): Promise<TaskList> {
   return tasks;
 }
 
-async function getTasksDummy(): Promise<TaskList> {
-  return new Promise((resolve) => {
-    let data: TaskList = [
-      {
-        edetabelNimi: "algarvuringid",
-        userCount: 55,
-      },
-      {
-        edetabelNimi: "temperatuurid",
-        userCount: 15,
-      },
-      {
-        edetabelNimi: "korduvad_read",
-        userCount: 77,
-      },
-      {
-        edetabelNimi: "ruut_ühtedest",
-        userCount: 39,
-      },
-      {
-        edetabelNimi: "summad_ja_sõnepõime",
-        userCount: 78,
-      },
-      {
-        edetabelNimi: "jaotus_rühmadeks",
-        userCount: 69,
-      },
-      {
-        edetabelNimi: "kuningad",
-        userCount: 69,
-      },
-    ];
-
-    setTimeout(() => {
-      resolve(data);
-    }, 500);
-  });
-}
-
-
-
-const ELOedetabel = [
-  {
-    "osaleja": "mc_CHAozz",
-    "ELO": 1200,
-    "results": [
-      {
-        "edetabel_nimi": "algarvuringid",
-        "koht": 1,
-        "skoor": "2.5",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "temperatuurid",
-        "koht": 2,
-        "skoor": "4769",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "korduvad_read",
-        "koht": 3,
-        "skoor": "121",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "ruut_ühtedest",
-        "koht": 19,
-        "skoor": "19.9",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "summad_ja_sõnepõime",
-        "koht": 1,
-        "skoor": "2.5",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "jaotus_rühmadeks",
-        "koht": 4,
-        "skoor": "28",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "kuningad",
-        "koht": 1,
-        "skoor": "(10, 9)",
-        "skoor2": "539.8",
-        "skoor1ühik": null,
-        "skoor2ühik": "ms"
-      },
-
-    ]
-  },
-  {
-    "osaleja": "mc_CHAozz",
-    "ELO": 1200,
-    "results": [
-      {
-        "edetabel_nimi": "algarvuringid",
-        "koht": 1,
-        "skoor": "2.5",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "temperatuurid",
-        "koht": 2,
-        "skoor": "4769",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "korduvad_read",
-        "koht": 3,
-        "skoor": "121",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "ruut_ühtedest",
-        "koht": 19,
-        "skoor": "19.9",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "summad_ja_sõnepõime",
-        "koht": 1,
-        "skoor": "2.5",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "jaotus_rühmadeks",
-        "koht": 4,
-        "skoor": "28",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "kuningad",
-        "koht": 1,
-        "skoor": "(10, 9)",
-        "skoor2": "539.8",
-        "skoor1ühik": null,
-        "skoor2ühik": "ms"
-      },
-
-    ]
-  },
-  {
-    "osaleja": "mc_CHAozz",
-    "ELO": 1200,
-    "results": [
-      {
-        "edetabel_nimi": "algarvuringid",
-        "koht": 1,
-        "skoor": "2.5",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "temperatuurid",
-        "koht": 2,
-        "skoor": "4769",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "korduvad_read",
-        "koht": 3,
-        "skoor": "121",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "ruut_ühtedest",
-        "koht": 19,
-        "skoor": "19.9",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "summad_ja_sõnepõime",
-        "koht": 1,
-        "skoor": "2.5",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "jaotus_rühmadeks",
-        "koht": 4,
-        "skoor": "28",
-        "skoor2": null,
-        "skoor1ühik": "ms",
-        "skoor2ühik": null
-      },
-      {
-        "edetabel_nimi": "kuningad",
-        "koht": 1,
-        "skoor": "(10, 9)",
-        "skoor2": "539.8",
-        "skoor1ühik": null,
-        "skoor2ühik": "ms"
-      },
-
-    ]
-  }
-]
-
 export default async function Home() {
 
-  // const tasks = await getTasks();
-  const tasks = await getTasksDummy();
+  const users: UserList = await getUsers();
+  const tasks: TaskList = await getTasks();
+  // const tasks = await getTasksDummy();
+
 
   return (
     <main className="flex h-screen w-full flex-col items-center justify-between">
@@ -276,6 +49,7 @@ export default async function Home() {
           <table className="table-auto text-black w-full mt-4">
             <thead>
               <tr className="text-lg lg:text-xl">
+                <th className="border">#</th>
                 <th className="border">Pseudonüüm</th>
                 <th className="border">ELO</th>
                 {
@@ -290,8 +64,9 @@ export default async function Home() {
               </tr>
             </thead>
             <tbody>
-              {ELOedetabel.map((osaleja, i) => {
+              {users.map((osaleja, i) => {
                 return <tr key={i} className={i % 2 == 0 ? "bg-slate-200" : "bg-slate-300"}>
+                  <td className="border text-center font-bold">{i + 1}</td>
                   <td className="border py-2 text-center underline">
                     <Link href={"/osaleja/" + osaleja.osaleja}>{osaleja.osaleja}
                     </Link>
@@ -300,10 +75,16 @@ export default async function Home() {
                     {osaleja.ELO}
                   </td>
                   {
-                    osaleja.results.map((res, j) => {
-                      return <td className="border text-center" key={i*100 + j}>
-                        {res.koht + "."}
-                      </td>
+                    tasks.map((task, j) => {
+                      if (osaleja.results.map(res => res.edetabel_nimi).includes(task.edetabelNimi)) {
+                        return <td className="border text-center" key={j}>
+                          {osaleja.results.filter(res => res.edetabel_nimi == task.edetabelNimi)[0].koht + "."}
+                        </td>
+                      } else {
+                        return <td className="border text-center" key={j}>
+                          -
+                        </td>
+                      }
                     })
                   }
                 </tr>

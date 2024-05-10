@@ -1,75 +1,87 @@
-"use client"
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-const osalejaData = {
-  "osaleja": "mc_CHAozz",
-  "ELO": 1200,
-  "results": [
-    {
-      "edetabel_nimi": "algarvuringid",
-      "koht": 1,
-      "skoor": "2.5",
-      "skoor2": null,
-      "skoor1ühik": "ms",
-      "skoor2ühik": null
-    },
-    {
-      "edetabel_nimi": "temperatuurid",
-      "koht": 2,
-      "skoor": "4769",
-      "skoor2": null,
-      "skoor1ühik": "ms",
-      "skoor2ühik": null
-    },
-    {
-      "edetabel_nimi": "korduvad_read",
-      "koht": 3,
-      "skoor": "121",
-      "skoor2": null,
-      "skoor1ühik": "ms",
-      "skoor2ühik": null
-    },
-    {
-      "edetabel_nimi": "ruut_ühtedest",
-      "koht": 19,
-      "skoor": "19.9",
-      "skoor2": null,
-      "skoor1ühik": "ms",
-      "skoor2ühik": null
-    },
-    {
-      "edetabel_nimi": "summad_ja_sõnepõime",
-      "koht": 1,
-      "skoor": "2.5",
-      "skoor2": null,
-      "skoor1ühik": "ms",
-      "skoor2ühik": null
-    },
-    {
-      "edetabel_nimi": "jaotus_rühmadeks",
-      "koht": 4,
-      "skoor": "28",
-      "skoor2": null,
-      "skoor1ühik": "ms",
-      "skoor2ühik": null
-    },
-    {
-      "edetabel_nimi": "kuningad",
-      "koht": 1,
-      "skoor": "(10, 9)",
-      "skoor2": "539.8",
-      "skoor1ühik": null,
-      "skoor2ühik": "ms"
-    },
+// const osalejaData = {
+//   "osaleja": "mc_CHAozz",
+//   "ELO": 1200,
+//   "results": [
+//     {
+//       "edetabel_nimi": "algarvuringid",
+//       "koht": 1,
+//       "skoor": "2.5",
+//       "skoor2": null,
+//       "skoor1ühik": "ms",
+//       "skoor2ühik": null
+//     },
+//     {
+//       "edetabel_nimi": "temperatuurid",
+//       "koht": 2,
+//       "skoor": "4769",
+//       "skoor2": null,
+//       "skoor1ühik": "ms",
+//       "skoor2ühik": null
+//     },
+//     {
+//       "edetabel_nimi": "korduvad_read",
+//       "koht": 3,
+//       "skoor": "121",
+//       "skoor2": null,
+//       "skoor1ühik": "ms",
+//       "skoor2ühik": null
+//     },
+//     {
+//       "edetabel_nimi": "ruut_ühtedest",
+//       "koht": 19,
+//       "skoor": "19.9",
+//       "skoor2": null,
+//       "skoor1ühik": "ms",
+//       "skoor2ühik": null
+//     },
+//     {
+//       "edetabel_nimi": "summad_ja_sõnepõime",
+//       "koht": 1,
+//       "skoor": "2.5",
+//       "skoor2": null,
+//       "skoor1ühik": "ms",
+//       "skoor2ühik": null
+//     },
+//     {
+//       "edetabel_nimi": "jaotus_rühmadeks",
+//       "koht": 4,
+//       "skoor": "28",
+//       "skoor2": null,
+//       "skoor1ühik": "ms",
+//       "skoor2ühik": null
+//     },
+//     {
+//       "edetabel_nimi": "kuningad",
+//       "koht": 1,
+//       "skoor": "(10, 9)",
+//       "skoor2": "539.8",
+//       "skoor1ühik": null,
+//       "skoor2ühik": "ms"
+//     },
     
-  ]
+//   ]
+// }
+
+async function getOsalejaData(osaleja) {
+  const res: Response = await fetch("http://localhost:8080/osalejateEdetabel/" + osaleja);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  const user: User = [...await res.json()][0];
+  // console.log(JSON.stringify(user));
+
+  return user;
 }
 
-export default function taskPage(props: any) {
+export default async function taskPage(props: any) {
   const pseudo = decodeURI(props.params.osalejaPseudo);
 
-
+  const osalejaData = await getOsalejaData(props.params.osalejaPseudo);
 
   return <main className="flex min-h-screen h-screen w-full flex-col items-center justify-between">
     <div className="h-full w-full bg-white flex flex-col items-center">
