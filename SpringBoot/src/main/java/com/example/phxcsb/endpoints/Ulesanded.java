@@ -1,5 +1,7 @@
 package com.example.phxcsb.endpoints;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,13 +15,17 @@ import java.util.Map;
 class Ulesanded {
     private final JdbcTemplate jdbcTemplate;
 
+    // Konstruktor
     public Ulesanded(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Tagastab JSON kõikide edetabelite nimede ja osalejate arvuga.
+     * @return - JSON
+     */
     @GetMapping(value = "/ulesanded", produces = "application/json")
     private Object leiaUlesanded() {
-        // SQL query
         String query = """
                 SELECT
                     edetabel_nimi,
@@ -28,28 +34,13 @@ class Ulesanded {
                 	dataFinal
                 GROUP BY
                 	edetabel_nimi
+                ORDER BY
+                    edetabel_id
                 """;
 
         // Saadud vastus
         List<Map<String, Object>> sqlData = jdbcTemplate.queryForList(query);
 
-        // Vormistame saadud vastuse JSON-iks.
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-
-        for(Map<String, Object> row : sqlData) {
-            sb.append("{");
-
-            sb.append("\"edetabelNimi\":\"").append(row.get("edetabel_nimi")).append("\",");
-            sb.append("\"userCount\":").append(row.get("userCount"));
-
-            sb.append("},");
-        }
-
-        // Eemaldame trailing koma ja lõpetame JSON-i ära.
-        if (sb.charAt(sb.length() - 1) == ',') sb.deleteCharAt(sb.length() - 1);
-        sb.append("]");
-
-        return sb;
+        return ResponseEntity.status(HttpStatus.OK).body(sqlData);
     }
 }
