@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      boxShadow: {
+        gold: '0 10px 20px -5px rgba(209, 154, 102, 0.1), 0 6px 6px -5px rgba(209, 154, 102, 0.06)'
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -19,4 +22,5 @@ const config: Config = {
   },
   plugins: [],
 };
+
 export default config;

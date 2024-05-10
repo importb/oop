@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getHumanReadableDate } from "@/utils/dateUtils";
 
 export default function taskPage(props: any) {
@@ -43,7 +43,26 @@ export default function taskPage(props: any) {
           skoor1: "(6, 4)",
           skoor2: "294"
         },
-
+        {
+          pseudo: "Osaleja3",
+          skoor1: "(7, 5)",
+          skoor2: "107"
+        },
+        {
+          pseudo: "Osaleja4",
+          skoor1: "(7, 5)",
+          skoor2: "434"
+        },
+        {
+          pseudo: "Osaleja5",
+          skoor1: "(6, 4)",
+          skoor2: "271"
+        },
+        {
+          pseudo: "Osaleja6",
+          skoor1: "(6, 4)",
+          skoor2: "294"
+        },
       ]
     }
   ]
@@ -53,10 +72,79 @@ export default function taskPage(props: any) {
   const [curLeaderboard, setCurLeaderboard] = useState(fetchedData.at(-1)?.results);
 
 
-  return <main className="flex h-screen w-full flex-col items-center justify-between">
-    <div className="h-full w-full bg-white pt-16">
+  const [allLeaderboards, setAllLeaderboards] = useState([]); 
+  // peale esimest painti, fetchime kõik edetabelid ajas
+  useEffect(() => {
+    async function f() {
+      const response = await fetch("/2024-05-10T131414.200.json");
+
+      if (!response.ok) {
+        console.error("Failed to fetch");
+        return;
+      }
+
+      const jsonData = await response.json();
+      console.log(jsonData);
+
+      setAllLeaderboards(jsonData);
+
+
+      // hiljem maha:
+      setCurLeaderboard(jsonData.at(-1)?.results);
+      setCurrentTimestamp(jsonData.at(-1)?.timestamp)
+    }
+
+    f();
+  }, [])
+
+  const [timestampIndex, setTimestampIndex] = useState(0);
+  const [isCounting, setIsCounting] = useState(false);
+  function animeeri() {
+    if (isCounting) {
+      console.log("Peatasin lugemise")
+    } else {
+      console.log("Alustan lugemist")
+    }
+
+    setIsCounting(!isCounting);
+  }
+
+  let interval: NodeJS.Timeout;
+  useEffect(() => {
+
+    if (isCounting) {
+      interval = setInterval(() => {
+        setTimestampIndex(prev => prev + 1);
+      }, 50);
+    
+    } else {
+      clearInterval(interval);
+    }
+
+    // Cleanup function to clear the interval when component unmounts
+    return () => clearInterval(interval);
+  }, [isCounting]);
+
+  useEffect(() => {
+    setCurLeaderboard(allLeaderboards[timestampIndex]?.results);
+    setCurrentTimestamp(allLeaderboards[timestampIndex]?.timestamp);
+  }, [timestampIndex]);
+
+  useEffect(() => {
+    console.log(timestampIndex, allLeaderboards.length - 1);
+    if (timestampIndex >= allLeaderboards.length - 1) {
+      console.log("Stopping")
+      setIsCounting(false)
+    }
+  }, [timestampIndex]);
+
+  return <main className="flex min-h-screen w-full flex-col items-center justify-between">
+    <div className="h-full w-full bg-white py-16">
       <div className="flex flex-row ">
-        <button className="flex flex-row bg-green-600 items-center pr-4 rounded-lg ml-32 absolute">
+        <button 
+          className="flex flex-row bg-green-600 items-center pr-4 rounded-lg ml-32 absolute"
+          onClick={animeeri}
+        >
           <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#fff">
             <path d="M320-200v-560l440 280-440 280Zm80-280Zm0 134 210-134-210-134v268Z" />
           </svg>
@@ -72,36 +160,36 @@ export default function taskPage(props: any) {
           </h2>
         </div>
       </div>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center mt-4">
         {
           curLeaderboard?.length >= 1 ?
-            <div>
-              <p className="text-black">
-                {"1. " + curLeaderboard[0].pseudo}
+            <div className=" bg-slate-300 py-4 rounded-md w-96">
+              <p className="text-black text-center text-lg">
+                {"1. " + curLeaderboard[0].pseudo + " " + curLeaderboard[0].skoor + (curLeaderboard[0].skoor2 ? ", " + curLeaderboard[0].skoor2 : "")}
               </p>
             </div> : <></>
         }
         {
           curLeaderboard?.length >= 2 ?
-            <div>
-              <p className="text-black">
-                {"2. " + curLeaderboard[1].pseudo}
+            <div className=" bg-slate-300 py-4 rounded-md w-96 mt-2">
+              <p className="text-black text-center text-lg">
+                {"2. " + curLeaderboard[1].pseudo + " " + curLeaderboard[1].skoor + (curLeaderboard[1].skoor2 ? ", " + curLeaderboard[1].skoor2 : "")}
               </p>
             </div> : <></>
         }
         {
           curLeaderboard?.length >= 3 ?
-            <div>
-              <p className="text-black">
-                {"3. " + curLeaderboard[2].pseudo}
+            <div className=" bg-slate-300 py-4 rounded-md w-96 mt-2 mb-1">
+              <p className="text-black text-center text-lg">
+                {"3. " + curLeaderboard[2].pseudo + " " + curLeaderboard[2].skoor + (curLeaderboard[2].skoor2 ? ", " + curLeaderboard[2].skoor2 : "")}
               </p>
             </div> : <></>
         }
         {
           curLeaderboard?.slice(3).map((osaleja, i) => {
-            return <div>
-              <p className="text-black">
-                {(i + 4) + ". " + osaleja.pseudo}
+            return <div className=" bg-slate-300 py-2 rounded-md w-64 mt-1" key={i+4}>
+              <p className="text-black text-center text-md">
+                {(i + 4) + ". " + osaleja.pseudo + " " + osaleja.skoor + (osaleja.skoor2 ? ", " + osaleja.skoor2 : "")}
               </p>
             </div>
           })
