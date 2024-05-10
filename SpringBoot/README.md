@@ -20,7 +20,7 @@ cd /path/to/oop/SpringBoot
 
 # vajadusel
 sudo apt install openjdk-17-jdk
-export #JAVA_HOME=/usr/lib/jvm/java-17-open
+export $JAVA_HOME=/usr/lib/jvm/java-17-open
 
 mvn clean install
 
