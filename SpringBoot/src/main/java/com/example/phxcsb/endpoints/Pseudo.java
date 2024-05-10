@@ -1,12 +1,10 @@
 package com.example.phxcsb.endpoints;
 
-import com.example.phxcsb.Exceptions.ExceptionOsalejaPuudub;
-import org.hibernate.type.descriptor.java.ObjectJavaType;
+import com.example.phxcsb.exceptions.ExceptionOsalejaPuudub;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -276,7 +274,7 @@ class Pseudo {
         Map<String, Object> root = new HashMap<>();
 
         // ERR.
-        if (data.isEmpty()) throw new ExceptionOsalejaPuudub("ERR: Osalejat nimega: \"" + nimi + "\" ei eksisteeri andmebaasis.");
+        if (data.isEmpty()) throw new ExceptionOsalejaPuudub("Osalejat nimega: \"" + nimi + "\" ei eksisteeri andmebaasis.");
 
         // Osaleja nimi
         root.put("osaleja", data.get(0).get("osaleja"));
