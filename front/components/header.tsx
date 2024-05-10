@@ -46,6 +46,8 @@ export default function Header(props: object) {
 
   }, [searchItem]);
 
+
+  // plaan on panna kõik searchabled session storagesse, et teha efektiivsemaks päringuid
   useEffect(() => {
     const a = async () => {
       // const fetchedSearchables: Searchables = await getSearchables();
