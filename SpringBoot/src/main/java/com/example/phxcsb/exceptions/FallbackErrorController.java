@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/error")
 public class FallbackErrorController implements ErrorController {
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<String> genericErrorHandler() {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERR: Midagi läks valesti.");
+    @RequestMapping(value = "/error", method = RequestMethod.GET)
+    public ResponseEntity<String> handleError() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERR: Midagi läks valesti.");
     }
 }
