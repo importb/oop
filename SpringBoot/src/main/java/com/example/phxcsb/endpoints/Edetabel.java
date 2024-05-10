@@ -1,5 +1,7 @@
 package com.example.phxcsb.endpoints;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,54 +17,9 @@ import java.util.Map;
 public class Edetabel {
     private final JdbcTemplate jdbcTemplate;
 
+    // Konstruktor
     public Edetabel(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-
-    private String formatToJSON(List<Map<String, Object>> data) {
-        StringBuilder vastus = new StringBuilder();
-        vastus.append("[");
-
-        long prgUnixTime = 0;
-
-
-        for (Map<String, Object> row : data) {
-            // aeg
-            Timestamp aeg = (Timestamp) row.get("aeg");
-            long unixTime = aeg.getTime() / 1000;
-
-            if (prgUnixTime != unixTime) {
-                if (vastus.charAt(vastus.length() - 1) == ',') vastus.deleteCharAt(vastus.length() - 1);
-                if (vastus.charAt(vastus.length() - 1) != '[') vastus.append("]},");
-                vastus.append("{");
-                vastus.append("\"timestamp\":").append(unixTime).append(",");
-                vastus.append("\"results\":[");
-                prgUnixTime = unixTime;
-            }
-
-
-            // andmed
-            Object osaleja = row.get("osaleja");
-            Object skoor = row.get("skoor");
-            Object skoor2 = row.get("skoor2");
-
-            if (osaleja != null) osaleja = "\"" + osaleja + "\"";
-            if (skoor != null) skoor = "\"" + skoor + "\"";
-
-            vastus.append("{");
-
-            vastus.append("\"pseudo\":").append(osaleja).append(",");
-            vastus.append("\"skoor\":").append(skoor).append(",");
-            vastus.append("\"skoor2\":").append(skoor2);
-
-            vastus.append("},");
-        }
-        // eemaldame trailing koma.
-        if (vastus.charAt(vastus.length() - 1) == ',') vastus.deleteCharAt(vastus.length() - 1);
-
-        vastus.append("]}]");
-        return vastus.toString();
     }
 
     private List<Map<String, Object>> sqlLeiaEdetabeliSkoorid(String nimi) {
@@ -105,21 +62,36 @@ public class Edetabel {
     @GetMapping(value = "/edetabel/{nimi}", produces = "application/json")
     private Object leiaEdetabel(@PathVariable String nimi, @RequestParam(required = false) String type) {
         if (nimi != null) {
+            // Kui type pole antud ss võtame last.
             if (type == null) type = "last";
 
+            // Kõik andmed
             if (type.equals("all")) {
                 List<Map<String, Object>> data = sqlLeiaEdetabeliSkoorid(nimi);
-                return formatToJSON(data);
+
+                for(Map<String, Object> row : data) {
+                    Timestamp aeg = (Timestamp) row.get("aeg");
+                    long unixTime = aeg.getTime() / 1000;
+                    row.put("aeg", unixTime);
+                }
+
+                return ResponseEntity.status(HttpStatus.OK).body(data);
             }
 
+            // Ainult kõige viimased sisestatud andmed
             if (type.equals("last")) {
                 List<Map<String, Object>> data = sqlLeiaEdetabeliViimasedSkoorid(nimi);
-                return formatToJSON(data);
-            }
 
+                for(Map<String, Object> row : data) {
+                    Timestamp aeg = (Timestamp) row.get("aeg");
+                    long unixTime = aeg.getTime() / 1000;
+                    row.put("aeg", unixTime);
+                }
+
+                return ResponseEntity.status(HttpStatus.OK).body(data);
+            }
             return "ERR: ei tunne type. Peab olema last|all.";
         }
-
         return "ERR: leidmiseks, pead andma edetabeli nime.";
     }
 }
