@@ -1,5 +1,6 @@
 package com.example.phxcsb.endpoints;
 
+import com.example.phxcsb.exceptions.ExceptionEdetabelPuudub;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +60,7 @@ public class Edetabel {
 
 
     @GetMapping(value = "/edetabel/{nimi}", produces = "application/json")
-    private Object leiaEdetabel(@PathVariable String nimi, @RequestParam(required = false) String type) {
+    private Object leiaEdetabel(@PathVariable String nimi, @RequestParam(required = false) String type) throws ExceptionEdetabelPuudub {
         if (nimi != null) {
             // Kui type pole antud ss võtame last.
             if (type == null) type = "last";
@@ -75,6 +75,8 @@ public class Edetabel {
                     row.put("aeg", unixTime);
                 }
 
+                if (data.isEmpty()) throw new ExceptionEdetabelPuudub("Edetabelit nimega \"" + nimi + "\" ei eksisteeri.");
+
                 return ResponseEntity.status(HttpStatus.OK).body(data);
             }
 
@@ -88,10 +90,12 @@ public class Edetabel {
                     row.put("aeg", unixTime);
                 }
 
+                if (data.isEmpty()) throw new ExceptionEdetabelPuudub("Edetabelit nimega \"" + nimi + "\" ei eksisteeri.");
+
                 return ResponseEntity.status(HttpStatus.OK).body(data);
             }
-            return "ERR: ei tunne type. Peab olema last|all.";
+            throw new ExceptionEdetabelPuudub("edetabelile ?type on andmata. (all|last)");
         }
-        return "ERR: leidmiseks, pead andma edetabeli nime.";
+        throw new ExceptionEdetabelPuudub("Edetabeli requesti vormistus on vale.");
     }
 }
