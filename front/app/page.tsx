@@ -280,7 +280,7 @@ export default async function Home() {
                 <th className="border">ELO</th>
                 {
                   tasks.map((task, i) => {
-                    return <th className="border" key={i}>
+                    return <th className="border underline" key={i}>
                       <Link href={"/task/" + task.edetabelNimi}>
                         {"Ül " + (i + 1)}
                       </Link>
