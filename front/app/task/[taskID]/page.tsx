@@ -72,7 +72,7 @@ export default function taskPage(props: any) {
   const [curLeaderboard, setCurLeaderboard] = useState(fetchedData.at(-1)?.results);
 
 
-  const [allLeaderboards, setAllLeaderboards] = useState([]); 
+  const [allLeaderboards, setAllLeaderboards] = useState([]);
   // peale esimest painti, fetchime kõik edetabelid ajas
   useEffect(() => {
     async function f() {
@@ -104,6 +104,7 @@ export default function taskPage(props: any) {
       console.log("Peatasin lugemise")
     } else {
       console.log("Alustan lugemist")
+      setTimestampIndex(0);
     }
 
     setIsCounting(!isCounting);
@@ -116,7 +117,7 @@ export default function taskPage(props: any) {
       interval = setInterval(() => {
         setTimestampIndex(prev => prev + 1);
       }, 50);
-    
+
     } else {
       clearInterval(interval);
     }
@@ -133,23 +134,36 @@ export default function taskPage(props: any) {
   useEffect(() => {
     console.log(timestampIndex, allLeaderboards.length - 1);
     if (timestampIndex >= allLeaderboards.length - 1) {
-      console.log("Stopping")
-      setIsCounting(false)
+      console.log("Stopping");
+      setIsCounting(false);
     }
   }, [timestampIndex]);
 
-  return <main className="flex min-h-screen w-full flex-col items-center justify-between">
-    <div className="h-full w-full bg-white py-16">
-      <div className="flex flex-row ">
-        <button 
-          className="flex flex-row bg-green-600 items-center pr-4 rounded-lg ml-32 absolute"
-          onClick={animeeri}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#fff">
-            <path d="M320-200v-560l440 280-440 280Zm80-280Zm0 134 210-134-210-134v268Z" />
-          </svg>
-          <p className="text-white text-xl">Animeeri</p>
-        </button>
+  return <main className="flex min-h-screen h-screen w-full flex-col items-center justify-between">
+    <div className="h-full w-full bg-white pb-16 pt-16">
+      <div className="flex flex-row lg:justify-normal justify-center">
+        {
+          isCounting ?
+            <button
+              className="flex flex-row bg-red-600 items-center pr-4 rounded-lg absolute lg:ml-32 lg:m-0 mt-20 hover:bg-red-700"
+              onClick={animeeri}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#fff">
+                <path d="M320-640v320-320Zm-80 400v-480h480v480H240Zm80-80h320v-320H320v320Z" />
+              </svg>
+              <p className="text-white text-xl">Peata</p>
+            </button>
+            :
+            <button
+              className="flex flex-row bg-green-600 items-center pr-4 rounded-lg absolute lg:ml-32 lg:m-0 mt-20 hover:bg-green-700"
+              onClick={animeeri}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#fff">
+                <path d="M320-200v-560l440 280-440 280Zm80-280Zm0 134 210-134-210-134v268Z" />
+              </svg>
+              <p className="text-white text-xl">Animeeri</p>
+            </button>
+        }
 
         <div className="mx-auto flex flex-col">
           <h1 className="text-black text-center text-4xl font-bold">
@@ -160,10 +174,10 @@ export default function taskPage(props: any) {
           </h2>
         </div>
       </div>
-      <div className="flex flex-col items-center mt-4">
+      <div className="flex flex-col items-center mt-20 lg:mt-4">
         {
           curLeaderboard?.length >= 1 ?
-            <div className=" bg-slate-300 py-4 rounded-md w-96">
+            <div className=" bg-slate-300 py-4 rounded-md w-96 shadow-sm">
               <p className="text-black text-center text-lg">
                 {"1. " + curLeaderboard[0].pseudo + " " + curLeaderboard[0].skoor + (curLeaderboard[0].skoor2 ? ", " + curLeaderboard[0].skoor2 : "")}
               </p>
@@ -171,7 +185,7 @@ export default function taskPage(props: any) {
         }
         {
           curLeaderboard?.length >= 2 ?
-            <div className=" bg-slate-300 py-4 rounded-md w-96 mt-2">
+            <div className=" bg-slate-300 py-4 rounded-md w-96 mt-2 shadow-sm">
               <p className="text-black text-center text-lg">
                 {"2. " + curLeaderboard[1].pseudo + " " + curLeaderboard[1].skoor + (curLeaderboard[1].skoor2 ? ", " + curLeaderboard[1].skoor2 : "")}
               </p>
@@ -179,7 +193,7 @@ export default function taskPage(props: any) {
         }
         {
           curLeaderboard?.length >= 3 ?
-            <div className=" bg-slate-300 py-4 rounded-md w-96 mt-2 mb-1">
+            <div className=" bg-slate-300 py-4 rounded-md w-96 mt-2 mb-1 shadow-sm">
               <p className="text-black text-center text-lg">
                 {"3. " + curLeaderboard[2].pseudo + " " + curLeaderboard[2].skoor + (curLeaderboard[2].skoor2 ? ", " + curLeaderboard[2].skoor2 : "")}
               </p>
@@ -187,7 +201,7 @@ export default function taskPage(props: any) {
         }
         {
           curLeaderboard?.slice(3).map((osaleja, i) => {
-            return <div className=" bg-slate-300 py-2 rounded-md w-64 mt-1" key={i+4}>
+            return <div className=" bg-slate-300 py-2 rounded-md w-64 mt-1 shadow-sm" key={i + 4}>
               <p className="text-black text-center text-md">
                 {(i + 4) + ". " + osaleja.pseudo + " " + osaleja.skoor + (osaleja.skoor2 ? ", " + osaleja.skoor2 : "")}
               </p>
