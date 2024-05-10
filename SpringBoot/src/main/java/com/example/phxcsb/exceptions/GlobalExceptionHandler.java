@@ -10,11 +10,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
-        // Customize the response message based on the exception type
         if (ex instanceof ExceptionOsalejaPuudub) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERR: " + ex.getMessage());
         }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERR: Midagi läks valesti.");
+        if (ex instanceof ExceptionEdetabelPuudub) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERR: " + ex.getMessage());
+        }
+
+        if (ex == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERR: Midagi läks valesti.");
+        }else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERR: " + ex.getMessage());
+        }
     }
 }
