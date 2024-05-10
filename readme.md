@@ -114,7 +114,8 @@ Potentsiaalne lahendus:
 Kuna iga 5 minuti tagant on scrapetud, siis saame näidata animatsioonidega, kuidas ajas need tulemused muutusid
 
 Potentsiaalne lahendus:
-* API endpoint /results/{edetabel_nimi}
+* API endpoint /results/{edetabel_nimi}?type=<all | last>
+* last tagastab ainult viimase timestampi
 * Tagastab kasvavas järjekorras timestampidega:
 
 ```js
@@ -125,10 +126,13 @@ Potentsiaalne lahendus:
             {
                 pseudo: <String>,
                 skoor1: <Float>,
-                skoor1Unit: <String>,
                 skoor2: <Float | NULL>,
-                skoor2Unit: <String | NULL>
-            }
+            },
+            {
+                pseudo: <String>,
+                skoor1: <Float>,
+                skoor2: <Float | NULL>,
+            },
         ]
     }
 ]
