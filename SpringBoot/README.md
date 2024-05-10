@@ -9,4 +9,20 @@ PHXC frontendi jaoks API.
 - **/ulesanded** - edetabeli nimi koos edetabeli osalejate arvuga.
 
 # Ülesseadistamine:
-todo.
+
+Linux-il:
+
+1. Saa õiged kredentsiaalid ja pane need `SpringBoot/src/main/resources/application.properties` faili
+
+2. 
+```bash
+cd /path/to/oop/SpringBoot
+
+# vajadusel
+sudo apt install openjdk-17-jdk
+export #JAVA_HOME=/usr/lib/jvm/java-17-open
+
+mvn clean install
+
+java -jar target/PHXCsb-0.0.1-SNAPSHOT.jar
+```
