@@ -1,5 +1,9 @@
 package com.example.phxcsb.endpoints;
 
+import com.example.phxcsb.Exceptions.ExceptionOsalejaPuudub;
+import org.hibernate.type.descriptor.java.ObjectJavaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -7,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -102,7 +107,6 @@ class Pseudo {
         for (Map<String, Object> row : result) {
             kohad.add((Integer) row.get("koht"));
         }
-
         return kohad;
     }
 
@@ -142,42 +146,33 @@ class Pseudo {
         // vastus
         List<Map<String, Object>> result = jdbcTemplate.queryForList(query);
 
-        // Edetabelite kohtade arv.
+        // Leiame iga osaleja ELO.
         List<Integer> vKohad = edetabeliteViimasedKohad();
-
-        // Alustame JSON vormistusega.
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        List<Map<String, Object>> vormistatud = new ArrayList<>();
 
         for (Map<String, Object> row : result) {
-            // ELO arvutamine
             List<Integer> oKohad = new ArrayList<>();
             List<Integer> edetabeliteID = new ArrayList<>();
+            Map<String, Object> mapVormistatud = new HashMap<>();
 
-            // Osaleja blokki algus
-            sb.append("{");
-            sb.append("\"osaleja\":\"").append(row.get("osaleja")).append("\",");
+            // osaleja nimi
+            mapVormistatud.put("osaleja", row.get("osaleja"));
 
-            // Edetabelite andmed
             for (int i = 1; i < 9; i++) {
+                // kui osaleja ei osalenud edetabelis ss jätame vahele.
                 if (row.get("edetabel_nimi_" + i) == null) continue;
 
-                // elo
+                // edetabeli ID ja osaleja koht.
                 edetabeliteID.add(i);
                 oKohad.add(Math.toIntExact((long) row.get("koht_" + i)));
             }
 
-            // Lisame JSON-sse osaleja ELO.
-            sb.append("\"ELO\":").append(arvutaELO(vKohad, oKohad, edetabeliteID));
-
-            sb.append("},");
+            // arvutame ELO ja lisame mapi ja siis listi.
+            mapVormistatud.put("ELO", arvutaELO(vKohad, oKohad, edetabeliteID));
+            vormistatud.add(mapVormistatud);
         }
 
-        // Eemaldame trailing koma ning lõpetame JSON-i ära.
-        sb.deleteCharAt(sb.length() - 1);
-        sb.append("]");
-
-        return sb.toString();
+        return ResponseEntity.status(HttpStatus.OK).body(vormistatud);
     }
 
 
@@ -227,17 +222,17 @@ class Pseudo {
 
         List<Map<String, Object>> result = jdbcTemplate.queryForList(query);
 
-        // format to json
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        // vormistus
+        List<Map<String, Object>> vormistatud = new ArrayList<>();
 
-        // elo jaoks
+        // ELO arvutamine
         List<Integer> vKohad = edetabeliteViimasedKohad();
 
-        for (Map<String, Object> row : result) {
-            sb.append("{");
-            sb.append("\"osaleja\":\"").append(row.get("osaleja")).append("\",");
-            sb.append("\"results\":[");
+        for(Map<String, Object> row : result) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("osaleja", row.get("osaleja"));
+
+            List<Object> tulemused = new ArrayList<>();
 
             // elo
             List<Integer> oKohad = new ArrayList<>();
@@ -250,104 +245,74 @@ class Pseudo {
                 edetabeliteID.add(i);
                 oKohad.add(Math.toIntExact((long) row.get("koht_" + i)));
 
-                // edetabeli info
-                sb.append("{");
-                sb.append("\"edetabel_nimi\":\"").append(row.get("edetabel_nimi_" + i)).append("\",");
+                Map<String, Object> edetabel = new HashMap<>();
 
-                sb.append("\"koht\":").append(row.get("koht_" + i)).append(",");
+                edetabel.put("edetabel_nimi", row.get("edetabel_nimi_" + i));
+                edetabel.put("koht", row.get("koht_" + i));
+                edetabel.put("skoor", row.get("skoor_" + i));
+                edetabel.put("skoor2", row.get("skoor2_" + i));
+                edetabel.put("skoor1ühik", ühikud[i - 1][0]);
+                edetabel.put("skoor2ühik", ühikud[i - 1][1]);
 
-                Object skoor = row.get("skoor_" + i);
-                if (skoor != null) skoor = "\"" + skoor + "\"";
-                sb.append("\"skoor\":").append(skoor).append(",");
-
-                Object skoor2 = row.get("skoor2_" + i);
-                if (skoor2 != null) skoor2 = "\"" + skoor2 + "\"";
-                sb.append("\"skoor2\":").append(skoor2).append(",");
-
-                Object skoor1ühik = ühikud[i - 1][0];
-                if (skoor1ühik != null) skoor1ühik = "\"" + skoor1ühik + "\"";
-                sb.append("\"skoor1ühik\":").append(skoor1ühik).append(",");
-
-                Object skoor2ühik = ühikud[i - 1][1];
-                if (skoor2ühik != null) skoor2ühik = "\"" + skoor2ühik + "\"";
-                sb.append("\"skoor2ühik\":").append(skoor2ühik);
-
-                sb.append("},");
+                tulemused.add(edetabel);
             }
 
-            // eemalda trailing koma
-            sb.deleteCharAt(sb.length() - 1);
+            map.put("results", tulemused);
+            map.put("ELO", arvutaELO(vKohad, oKohad, edetabeliteID));
 
-            // elo arvutamine
-            int elo = arvutaELO(vKohad, oKohad, edetabeliteID);
-            sb.append("],\"ELO\":").append(elo);
-
-            sb.append("},");
+            vormistatud.add(map);
         }
-        sb.deleteCharAt(sb.length() - 1);
-        sb.append("]");
 
-        return sb;
+        return ResponseEntity.status(HttpStatus.OK).body(vormistatud);
     }
 
     @GetMapping(value = "/osalejateEdetabel/{nimi}", produces = "application/json")
-    private Object leiaOsaleja(@PathVariable String nimi) {
+    private Object leiaOsaleja(@PathVariable String nimi) throws Exception {
         StringBuilder sb = new StringBuilder();
-        List<Map<String, Object>> edetabel = sqlLeiaEdetabeliteSkoor(nimi);
+        List<Map<String, Object>> data = sqlLeiaEdetabeliteSkoor(nimi);
 
-        // Lisa osaleja nimi.
-        sb.append("[{\"osaleja\":\"").append(nimi).append("\",");
+        // Vormistame ümber
+        List<Map<String, Object>> vormistatud = new ArrayList<>();
+        Map<String, Object> root = new HashMap<>();
 
-        // Lisa elo
+        // ERR.
+        if (data.isEmpty()) throw new ExceptionOsalejaPuudub("ERR: Osalejat nimega: \"" + nimi + "\" ei eksisteeri andmebaasis.");
+
+        // Osaleja nimi
+        root.put("osaleja", data.get(0).get("osaleja"));
+
+        // Osaleja ELO
         List<Integer> vKohad = edetabeliteViimasedKohad();
         List<Integer> oKohad = new ArrayList<>();
         List<Integer> edetabeliteID = new ArrayList<>();
 
-        for (Map<String, Object> row : edetabel) oKohad.add((Integer) row.get("koht"));
-        for (Map<String, Object> row : edetabel) edetabeliteID.add((Integer) row.get("edetabel_id"));
+        for (Map<String, Object> row : data) oKohad.add((Integer) row.get("koht"));
+        for (Map<String, Object> row : data) edetabeliteID.add((Integer) row.get("edetabel_id"));
 
-        int elo = arvutaELO(vKohad, oKohad, edetabeliteID);
+        root.put("ELO", arvutaELO(vKohad, oKohad, edetabeliteID));
 
-        sb.append("\"ELO\":").append(elo).append(",");
+        // Tulemused
+        List<Object> tulemused = new ArrayList<>();
 
-        // Lisa edetabelite tulemused
-        sb.append("\"results\":[");
+        for(Map<String, Object> row : data) {
+            Map<String, Object> tulemus = new HashMap<>();
 
-        try {
-            int i = 1;
-            for (Map<String, Object> row : edetabel) {
-                Object edetabel_nimi = row.get("edetabel_nimi");
-                Object koht = row.get("koht");
-                Object skoor = row.get("skoor");
-                Object skoor2 = row.get("skoor2");
-                Object skoor1ühik = ühikud[i - 1][0];
-                Object skoor2ühik = ühikud[i - 1][1];
+            tulemus.put("edetabel_nimi", row.get("edetabel_nimi"));
+            tulemus.put("koht", row.get("koht"));
+            tulemus.put("skoor", row.get("skoor"));
+            tulemus.put("skoor2", row.get("skoor2"));
 
-                if (edetabel_nimi != null) edetabel_nimi = "\"" + edetabel_nimi + "\"";
-                if (skoor != null) skoor = "\"" + skoor + "\"";
-                if (skoor2 != null) skoor2 = "\"" + skoor2 + "\"";
-                if (skoor1ühik != null) skoor1ühik = "\"" + skoor1ühik + "\"";
-                if (skoor2ühik != null) skoor2ühik = "\"" + skoor2ühik + "\"";
+            int edetabel_id = (int) row.get("edetabel_id");
+            tulemus.put("skoor1ühik", ühikud[edetabel_id - 1][0]);
+            tulemus.put("skoor2ühik", ühikud[edetabel_id - 1][1]);
 
-                sb.append("{");
-                sb.append("\"edetabel_nimi\":").append(edetabel_nimi).append(",");
-                sb.append("\"koht\":").append(koht).append(",");
-                sb.append("\"skoor\":").append(skoor).append(",");
-                sb.append("\"skoor2\":").append(skoor2).append(",");
-                sb.append("\"skoor1ühik\":").append(skoor1ühik).append(",");
-                sb.append("\"skoor2ühik\":").append(skoor2ühik);
-                sb.append("},");
-                i += 1;
-            }
-        } catch (Exception ignored) {
-            // list oli empty.
+            tulemused.add(tulemus);
         }
 
-        // end
-        if (sb.charAt(sb.length() - 1) == ',') sb.deleteCharAt(sb.length() - 1);
-        sb.append("]");
-        sb.append("}]");
+        // Root vormistatud listi.
+        root.put("results", tulemused);
+        vormistatud.add(root);
 
-        return sb.toString();
+        return ResponseEntity.status(HttpStatus.OK).body(vormistatud);
     }
 }
