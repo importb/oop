@@ -45,97 +45,6 @@ public class Main {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-
-    /**
-     * täidab edetabel, osalejad, skoorid, skooriühikud listid.
-     *
-     * @param unparsedData - antud lehekülje andmed
-     */
-    public static void leiaAndmed(HttpResponse<String> unparsedData) {
-        if (unparsedData != null) {
-            String[] bodyData = unparsedData.body().replace("\t", "").split("\n");
-
-
-            int edetabel = 0;
-            // Osaleja skoorid
-            List<String> osalejaSkoorid = new ArrayList<>();
-            List<String> osalejaSkooriühikud = new ArrayList<>();
-
-            for (String line : bodyData) {
-                // Edetabeli nimed
-                if (line.startsWith("<h1>")) {
-                    edetabelid.add(line.substring(4, line.length() - 5));
-                    osalejad.add(new ArrayList<>());
-                    skoorid.add(new ArrayList<>());
-                    skooriühikud.add(new ArrayList<>());
-
-                    if (edetabel > 0) {
-                        skoorid.get(edetabel - 1).add(osalejaSkoorid);
-                        skooriühikud.get(edetabel - 1).add(osalejaSkooriühikud);
-                        osalejaSkoorid = new ArrayList<>();
-                        osalejaSkooriühikud = new ArrayList<>();
-                    }
-
-                    edetabel++;
-                }
-
-                if (edetabel > 0) {
-                    // Osaleja nimed
-                    if (line.contains("pseudo")) {
-                        skoorid.get(edetabel - 1).add(osalejaSkoorid);
-                        skooriühikud.get(edetabel - 1).add(osalejaSkooriühikud);
-                        osalejaSkoorid = new ArrayList<>();
-                        osalejaSkooriühikud = new ArrayList<>();
-
-
-                        // eemaldame juhendajad.
-                        if (line.substring(21, line.length() - 7).split("\\.")[0].equals("Juh")) continue;
-
-                        String osalejaNimi = line.substring(21, line.length() - 7).split("\\.")[1];
-
-                        osalejad.get(edetabel - 1).add(osalejaNimi.trim());
-                    }
-
-                    if (line.contains("skoor\"")) {
-                        String skoor = line.substring(20, line.length() - 7)
-                                .replace("<span class=\"komakoht\">", "");
-                        String[] skooriAndmed;
-
-
-                        if (!line.contains("(")) {
-
-                            skooriAndmed = skoor.replace("</span>", "").split(" ");
-                        } else {
-                            skooriAndmed = new String[]{skoor.replace("</span>", "")};
-                        }
-
-                        // skoor
-                        osalejaSkoorid.add(skooriAndmed[0]);
-
-                        // skooriühik
-                        if (skooriAndmed.length > 1) {
-                            osalejaSkooriühikud.add(skooriAndmed[1]);
-                        } else {
-                            osalejaSkooriühikud.add("");
-                        }
-                    }
-                }
-            }
-
-            // Viimane osaleja ka.
-            skoorid.get(edetabel - 1).add(osalejaSkoorid);
-            skooriühikud.get(edetabel - 1).add(osalejaSkooriühikud);
-
-            // Clean up
-            for (List<List<String>> s : skoorid) {
-                s.removeIf(List::isEmpty);
-            }
-            for (List<List<String>> sü : skooriühikud) {
-                sü.removeIf(List::isEmpty);
-            }
-        }
-    }
-
     public static Map<String, String> readEnvFile(String kaust) {
         Map<String, String> envMap = new HashMap<>();
         BufferedReader reader = null;
@@ -215,21 +124,21 @@ public class Main {
                 // kui meil on ühe skooriga edetabel
                 if (jsonobject.isNull("skoor2")) {
                     päring.append(String.format("(%d, \"%s\", \"%s\", \"%s\", NULL, \"%s\")",
-                        jsonobject.getInt("edetabel_id"),
-                        jsonobject.getString("edetabel_nimi"),
-                        jsonobject.getString("osaleja"),
-                        jsonobject.getString("skoor"),
-                        jsonobject.getString("timestamp")
+                            jsonobject.getInt("edetabel_id"),
+                            jsonobject.getString("edetabel_nimi"),
+                            jsonobject.getString("osaleja"),
+                            jsonobject.getString("skoor"),
+                            jsonobject.getString("timestamp")
                     ));
                 } else {
                     päring.append(String.format("(%d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")",
-                    jsonobject.getInt("edetabel_id"),
-                    jsonobject.getString("edetabel_nimi"),
-                    jsonobject.getString("osaleja"),
-                    jsonobject.getString("skoor"),
-                    jsonobject.getString("skoor2"),
-                    jsonobject.getString("timestamp")
-                ));
+                            jsonobject.getInt("edetabel_id"),
+                            jsonobject.getString("edetabel_nimi"),
+                            jsonobject.getString("osaleja"),
+                            jsonobject.getString("skoor"),
+                            jsonobject.getString("skoor2"),
+                            jsonobject.getString("timestamp")
+                    ));
                 }
                 addedCount++;
             }
@@ -257,7 +166,6 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         HttpResponse<String> unparsedData = scrapeWebsite("https://www.phxc.ee");
-        leiaAndmed(unparsedData);
 
         String kaust;
         if (args != null && args.length > 0) {
@@ -266,50 +174,115 @@ public class Main {
             kaust = "./";
         }
 
-        ArrayList<String> JSONdata = new ArrayList<String>();
-
         // timestamp
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date currentDate = new Date();
         String now = dateFormat.format(currentDate);
 
-        // Koostame faili
-        for (int i = 0; i < osalejad.size(); i++) {
-            String edetabeliNimi = edetabelid.get(i);
+        // ava fail kirjutamiseks
+        File fail = new File(kaust + "data_" + now + ".txt");
+        FileWriter kirjutaja = new FileWriter(fail, true);
 
-            for (int j = 0; j < osalejad.get(i).size(); j++) {
-                // ava fail kirjutamiseks
-                File fail = new File(kaust + "data_" + now + ".txt");
-                fail = new File("data.txt");
-                FileWriter kirjutaja = new FileWriter(fail, true);
+        // Leiame JSON data
+        ArrayList<String> JSONdata = new ArrayList<>();
 
-                // osaleja andmed
-                String osalejaNimi = osalejad.get(i).get(j);
-                List<String> osalejaSkoorid = skoorid.get(i).get(j);
-                List<String> osalejaSkooriühikud = skooriühikud.get(i).get(j);
+        // Leiame PHXC andmed
+        String[] body = unparsedData.body().split("\n");
+        ArrayList<String> edetabelNimed = new ArrayList<>();
+        ArrayList<ArrayList<ArrayList<String>>> edetabeliteInfo = new ArrayList<>();
+        ArrayList<ArrayList<String>> praeguneEdetabel = new ArrayList<>();
 
-                // skoor 1
-                // Float skoor1 = Float.valueOf(osalejaSkoorid.get(0).replaceAll("[^0-9]", ""));
-                String skoor1 = osalejaSkoorid.get(0);
-                String skooriÜhik1 = osalejaSkooriühikud.get(0);
+        for (int i = 0; i < body.length; i++) {
+            String line = body[i].trim();
 
-                if (skooriÜhik1.isEmpty()) skooriÜhik1 = "NULL";
-                else skooriÜhik1 = "\"" + skooriÜhik1 + "\"";
+            // Edetabeli nimi
+            if (line.contains("<h1>")) {
+                if (!praeguneEdetabel.isEmpty()) edetabeliteInfo.add(praeguneEdetabel);
+                edetabelNimed.add(line.substring(4, line.length() - 5));
+                praeguneEdetabel = new ArrayList<>();
+            }
 
-                // skoor 2
-                String skoor2 = "NULL";
-                String skooriÜhik2 = "NULL";
+            // Osaleja nimi ja tema skoorid.
+            if (line.contains("<span class=\"pseudo\">")) {
+                ArrayList<String> osaleja = new ArrayList<>();
 
-                if (osalejaSkoorid.size() > 1) {
-                    skoor2 = osalejaSkoorid.get(1);
-                    skooriÜhik2 = "\"" + osalejaSkooriühikud.get(1) + "\"";
+                String osalejaNimi = line.substring(21, line.length() - 7);
+
+                // Leiame skoor 1
+                String skoor1 = "null";
+                String skoor1ühik = "null";
+                String line2 = body[i + 1].trim();
+                if (line2.contains("<span class=\"skoor\">")) {
+                    String skoor1String = line2
+                            .replace("<span class=\"skoor\">", "")
+                            .replace("<span class=\"komakoht\">", "")
+                            .replace("</span>", "");
+
+
+                    String[] skoorAndmed = skoor1String.split(" ");
+
+                    if (skoor1String.contains("(")) {
+                        skoorAndmed = new String[]{skoor1String};
+                    }
+
+                    skoor1 = skoorAndmed[0];
+                    if (skoorAndmed.length == 2) skoor1ühik = skoorAndmed[1];
                 }
 
-                // ava fail kirjutamiseks
+                // Leiame skoor 2
+                String skoor2 = "null";
+                String skoor2ühik = "null";
+                String line3 = body[i + 2].trim();
+                if (line3.contains("<span class=\"skoor\">")) {
+                    String skoor1String = line3
+                            .replace("<span class=\"skoor\">", "")
+                            .replace("<span class=\"komakoht\">", "")
+                            .replace("</span>", "");
+
+                    String[] skoorAndmed = skoor1String.split(" ");
+
+                    if (skoor1String.contains("(")) {
+                        skoorAndmed = new String[]{skoor1String};
+                    }
+
+                    skoor2 = skoorAndmed[0];
+                    if (skoorAndmed.length == 2) skoor2ühik = skoorAndmed[1];
+                }
+
+                // Lisa
+                osaleja.add(osalejaNimi);
+                osaleja.add(skoor1);
+                osaleja.add(skoor1ühik);
+                osaleja.add(skoor2);
+                osaleja.add(skoor2ühik);
+
+                praeguneEdetabel.add(osaleja);
+            }
+        }
+
+        int index = 0;
+        for (ArrayList<ArrayList<String>> edetabeliInfo : edetabeliteInfo) {
+
+            for (ArrayList<String> info : edetabeliInfo) {
+                String edetabeliNimi = edetabelNimed.get(index);
+                String[] osalejaInfo = info.getFirst().split(" ");
+
+                if (osalejaInfo[0].contains("Juh")) continue;
+
+                String osalejaNimi = osalejaInfo[1].replace("amp;", "");
+                String skoor1 = info.get(1);
+                String skooriÜhik1 = info.get(2);
+                String skoor2 = info.get(3);
+                String skooriÜhik2 = info.getLast();
+
+                if (!skoor1.equals("null")) skoor1 = "\"" + skoor1 + "\"";
+                if (!skooriÜhik1.equals("null")) skooriÜhik1 = "\"" + skooriÜhik1 + "\"";
+                if (!skooriÜhik2.equals("null")) skooriÜhik2 = "\"" + skooriÜhik2 + "\"";
+
                 String JSON = String.format(
-                        "{\"timestamp\":\"%s\", \"edetabel_id\":%s, \"edetabel_nimi\":\"%s\", \"osaleja\":\"%s\", \"skoor\":\"%s\", \"skooriühik\":%s, \"skoor2\":\"%s\", \"skooriühik2\":%s}",
+                        "{\"timestamp\":\"%s\", \"edetabel_id\":%s, \"edetabel_nimi\":\"%s\", \"osaleja\":\"%s\", \"skoor\":%s, \"skooriühik\":%s, \"skoor2\":%s, \"skooriühik2\":%s}",
                         now,
-                        i+1,
+                        index + 1,
                         edetabeliNimi,
                         osalejaNimi,
                         skoor1,
@@ -318,14 +291,13 @@ public class Main {
                         skooriÜhik2
                 );
 
-                JSONdata.add(JSON);
-
-                // kirjuta ja sulge.
                 kirjutaja.write(JSON + "\n");
-                kirjutaja.close();
             }
+
+            index++;
         }
 
+        kirjutaja.close();
         System.out.println("Kirjutatud faili!");
         writeDataToDatabase(JSONdata, kaust);
     }
