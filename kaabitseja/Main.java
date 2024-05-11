@@ -280,6 +280,7 @@ public class Main {
 
                 if (!skoor1.equals("null")) skoor1 = "\"" + skoor1 + "\"";
                 if (!skooriÜhik1.equals("null")) skooriÜhik1 = "\"" + skooriÜhik1 + "\"";
+                if (!skoor2.equals("null")) skoor2 = "\"" + skoor2 + "\"";
                 if (!skooriÜhik2.equals("null")) skooriÜhik2 = "\"" + skooriÜhik2 + "\"";
 
                 String JSON = String.format(
