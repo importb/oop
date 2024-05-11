@@ -84,7 +84,7 @@ public class Edetabel {
             Map<String, Object> skoor = new HashMap<>();
             skoor.put("skoor", map.get("skoor"));
             skoor.put("skoor2", map.get("skoor2"));
-            skoor.put("pseudo", map.get("pseudo"));
+            skoor.put("pseudo", map.get("osaleja"));
 
             List<Map<String, Object>> results = (List<Map<String, Object>>) root.get("results");
             results.add(skoor);
