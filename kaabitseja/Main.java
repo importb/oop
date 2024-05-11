@@ -260,6 +260,9 @@ public class Main {
             }
         }
 
+        // lisame viimase edetabeli ka
+        edetabeliteInfo.add(praeguneEdetabel);
+        
         int index = 0;
         for (ArrayList<ArrayList<String>> edetabeliInfo : edetabeliteInfo) {
 
