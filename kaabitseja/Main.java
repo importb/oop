@@ -292,6 +292,7 @@ public class Main {
                 );
 
                 kirjutaja.write(JSON + "\n");
+                JSONdata.add(JSON);
             }
 
             index++;
