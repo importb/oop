@@ -2,3 +2,6 @@ kaabitseja/data/
 kaabitseja/.env
 kaabitseja/*.class
 kaabitseja/data*
+.vscode/
+
+SpringBoot/src/main/resources/application.properties
