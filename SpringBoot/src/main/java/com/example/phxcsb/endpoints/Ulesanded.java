@@ -3,6 +3,7 @@ package com.example.phxcsb.endpoints;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,6 +25,7 @@ class Ulesanded {
      * Tagastab JSON kõikide edetabelite nimede ja osalejate arvuga.
      * @return - JSON
      */
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/ulesanded", produces = "application/json")
     private Object leiaUlesanded() {
         String query = """

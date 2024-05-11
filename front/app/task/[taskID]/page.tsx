@@ -6,78 +6,16 @@ import Link from "next/link";
 export default function taskPage(props: any) {
   const taskName = decodeURI(props.params.taskID);
 
-  const fetchedData = [
-    {
-      timestamp: "1713732602",
-      // ...
-    },
-    {
-      timestamp: "1713732902",
-      results: [
-        {
-          pseudo: "Osaleja1",
-          skoor1: "(10, 9)",
-          skoor2: "539"
-        },
-        {
-          pseudo: "Osaleja2",
-          skoor1: "(10, 9)",
-          skoor2: "567"
-        },
-        {
-          pseudo: "Osaleja3",
-          skoor1: "(7, 5)",
-          skoor2: "107"
-        },
-        {
-          pseudo: "Osaleja4",
-          skoor1: "(7, 5)",
-          skoor2: "434"
-        },
-        {
-          pseudo: "Osaleja5",
-          skoor1: "(6, 4)",
-          skoor2: "271"
-        },
-        {
-          pseudo: "Osaleja6",
-          skoor1: "(6, 4)",
-          skoor2: "294"
-        },
-        {
-          pseudo: "Osaleja3",
-          skoor1: "(7, 5)",
-          skoor2: "107"
-        },
-        {
-          pseudo: "Osaleja4",
-          skoor1: "(7, 5)",
-          skoor2: "434"
-        },
-        {
-          pseudo: "Osaleja5",
-          skoor1: "(6, 4)",
-          skoor2: "271"
-        },
-        {
-          pseudo: "Osaleja6",
-          skoor1: "(6, 4)",
-          skoor2: "294"
-        },
-      ]
-    }
-  ]
-
-  const [currentTimestamp, setCurrentTimestamp] = useState<string | undefined>(fetchedData.at(-1)?.timestamp);
+  const [currentTimestamp, setCurrentTimestamp] = useState<string | undefined>("0");
   // console.log(getHumanReadableDate(fetchedData.at(-1)?.timestamp));
-  const [curLeaderboard, setCurLeaderboard] = useState(fetchedData.at(-1)?.results);
+  const [curLeaderboard, setCurLeaderboard] = useState([]);
 
 
   const [allLeaderboards, setAllLeaderboards] = useState([]);
   // peale esimest painti, fetchime kõik edetabelid ajas
   useEffect(() => {
     async function f() {
-      const response = await fetch("/2024-05-10T131414.200.json");
+      const response = await fetch("http://localhost:8080/edetabel/" + taskName + "?type=all");
 
       if (!response.ok) {
         console.error("Failed to fetch");

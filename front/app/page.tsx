@@ -43,8 +43,8 @@ export default async function Home() {
 
   return (
     <main className="flex h-screen w-full flex-col items-center justify-between">
-      <div className="h-full w-full bg-white flex flex-row justify-between pt-4">
-        <div className="w-4/5 h-full px-8">
+      <div className="h-full w-full bg-white flex flex-col lg:flex-row justify-between pt-4">
+        <div className="w-full lg:w-4/5 h-fit lg:h-full px-8 overflow-x-auto">
           <h2 className="text-black text-2xl font-medium">Üldedetabel</h2>
           <table className="table-auto text-black w-full mt-4">
             <thead>
@@ -94,7 +94,7 @@ export default async function Home() {
         </div>
 
 
-        <div className="w-2/5 h-full flex flex-col items-center">
+        <div className="w-full lg:w-2/5 mt-4 lg:mt-0 h-full flex flex-col items-center">
           <h2 className="text-black text-2xl font-medium">Ülesanded</h2>
           <div className="flex flex-col">
             {

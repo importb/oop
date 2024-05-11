@@ -3,6 +3,7 @@ package com.example.phxcsb.endpoints;
 import com.example.phxcsb.exceptions.ExceptionOsalejaPuudub;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -173,7 +174,7 @@ class Pseudo {
         return ResponseEntity.status(HttpStatus.OK).body(vormistatud);
     }
 
-
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/osalejateEdetabel", produces = "application/json")
     private Object leiaOsalejad() {
         // oh god, what have I created. kui on parem idee, ss fix :).

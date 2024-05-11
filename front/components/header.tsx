@@ -18,61 +18,27 @@ export default function Header(props: object) {
   // plaan on panna kõik searchabled session storagesse, et teha efektiivsemaks päringuid
   useEffect(() => {
     const a = async () => {
-      setTimeout(() => {
-        setSearchables([
-          {
-            type: "user",
-            value: "mc_Chaozz"
-          },
-          {
-            type: "user",
-            value: "XMithriLREPtIlE89X"
-          },
-          {
-            type: "user",
-            value: "XXIron_magEXX"
-          },
-          {
-            type: "user",
-            value: "zS4Tyr"
-          },
-          {
-            type: "user",
-            value: "MAGic_PrIncE"
-          },
-          {
-            type: "user",
-            value: "XliLGhoulX"
-          },
-          {
-            type: "task",
-            value: "algarvuringid"
-          },
-          {
-            type: "task",
-            value: "temperatuurid"
-          },
-          {
-            type: "task",
-            value: "korduvad_read"
-          },
-          {
-            type: "task",
-            value: "ruut_ühtedest"
-          },
-          {
-            type: "task",
-            value: "kuningad"
-          },
+      const resp1 = await fetch("http://localhost:8080/osalejateEdetabel");
+      const resp2 = await fetch("http://localhost:8080/ulesanded");
 
-        ])
-      }, 1000);
+      if (!resp1.ok || !resp2.ok) {
+        console.error("Failed to fetch");
+        return;
+      }
 
+      console.log("fetch good");
+
+      setSearchables(
+        [
+          ...(await resp1.json()).map((osaleja: User) => { return {type: "user", value: osaleja.osaleja} }),
+          ...(await resp2.json()).map((task: Task) => { return {type: "task", value: task.edetabel_nimi } })
+        ]
+      );
 
     }
     a();
-  }, [])
-
+  }, []);
+  
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchItem(e.target.value);
 
@@ -140,8 +106,8 @@ export default function Header(props: object) {
         className="w-full mr-3 text-black focus:outline-none"
         onKeyDown={handleKeyDown}
         onKeyUp={handleKeyUp}
-        onFocus={() => {setShowSearchBar(true)}}
-        onBlur={() => {setShowSearchBar(false)}}
+        onFocus={() => { setShowSearchBar(true) }}
+        onBlur={() => { setShowSearchBar(false) }}
         placeholder="Otsi ülesannet või osalejat"
         value={searchItem}
         onChange={(e) => handleSearch(e)}
@@ -151,7 +117,7 @@ export default function Header(props: object) {
         <div className="absolute top-[68px] ml-[-2px] rounded-md">
           {searchResults.map((sr: Searchable, i: number) =>
             <Link href={(sr.type == "user" ? "/osaleja/" + sr.value : "/task/" + sr.value)} key={i}>
-              <div className={"flex flex-row w-80 p-2 border-slate-300 border-2 border-t-0 " + (selectedOptionIndex == i ? " bg-slate-300 " : " bg-white ") + (i == searchResults.length - 1 ? " rounded-b-2xl " : " ") }>
+              <div className={"flex flex-row w-80 p-2 border-slate-300 border-2 border-t-0 " + (selectedOptionIndex == i ? " bg-slate-300 " : " bg-white ") + (i == searchResults.length - 1 ? " rounded-b-2xl " : " ")}>
                 {
                   sr.type == "user" ?
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#454545" className="mr-2">
