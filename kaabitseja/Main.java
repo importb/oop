@@ -265,7 +265,7 @@ public class Main {
 
             for (ArrayList<String> info : edetabeliInfo) {
                 String edetabeliNimi = edetabelNimed.get(index);
-                String[] osalejaInfo = info.getFirst().split(" ");
+                String[] osalejaInfo = info.get(0).split(" ");
 
                 if (osalejaInfo[0].contains("Juh")) continue;
 
@@ -273,7 +273,7 @@ public class Main {
                 String skoor1 = info.get(1);
                 String skooriÜhik1 = info.get(2);
                 String skoor2 = info.get(3);
-                String skooriÜhik2 = info.getLast();
+                String skooriÜhik2 = info.get(info.size() - 1);
 
                 if (!skoor1.equals("null")) skoor1 = "\"" + skoor1 + "\"";
                 if (!skooriÜhik1.equals("null")) skooriÜhik1 = "\"" + skooriÜhik1 + "\"";
