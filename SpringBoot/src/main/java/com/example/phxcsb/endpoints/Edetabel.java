@@ -61,6 +61,42 @@ public class Edetabel {
         return jdbcTemplate.queryForList(query, nimi, nimi);
     }
 
+    private List<Map<String, Object>> sqlLeiaEdetabeliSkooridNew(String nimi) {
+        String query = """
+                SELECT
+                    osaleja, skoor, skoor2, aeg
+                FROM
+                    dataNew
+                WHERE
+                    edetabel_nimi = ?
+                ORDER BY
+                    aeg asc
+                """;
+        return jdbcTemplate.queryForList(query, nimi);
+    }
+
+    private List<Map<String, Object>> sqlLeiaEdetabeliViimasedSkooridNew(String nimi) {
+        String query = """
+                SELECT
+                	osaleja, skoor, skoor2, aeg
+                FROM
+                	dataNew d
+                WHERE
+                	aeg IN (
+                		SELECT
+                			MAX(aeg)
+                		FROM
+                			dataNew
+                		WHERE
+                			edetabel_nimi = ?
+                		) AND
+                	edetabel_nimi = ?
+                ORDER BY
+                	aeg desc
+                """;
+        return jdbcTemplate.queryForList(query, nimi, nimi);
+    }
+
     private List<Map<String, Object>> formatData(List<Map<String, Object>> data) {
         long prgUnixTime = 0;
 
@@ -103,7 +139,12 @@ public class Edetabel {
 
             // Kõik andmed
             if (type.equals("all")) {
-                List<Map<String, Object>> data = sqlLeiaEdetabeliSkoorid(nimi);
+                List<Map<String, Object>> data;
+                if (nimi.equals("algarvuringid")) {
+                    data = sqlLeiaEdetabeliSkooridNew(nimi);
+                }else {
+                    data = sqlLeiaEdetabeliSkoorid(nimi);
+                }
 
                 // err : edetabelit pole
                 if (data.isEmpty()) throw new ExceptionEdetabelPuudub("Edetabelit nimega \"" + nimi + "\" ei eksisteeri.");
@@ -113,7 +154,12 @@ public class Edetabel {
 
             // Ainult kõige viimased sisestatud andmed
             if (type.equals("last")) {
-                List<Map<String, Object>> data = sqlLeiaEdetabeliViimasedSkoorid(nimi);
+                List<Map<String, Object>> data;
+                if (nimi.equals("algarvuringid")) {
+                    data = sqlLeiaEdetabeliViimasedSkooridNew(nimi);
+                }else {
+                    data = sqlLeiaEdetabeliViimasedSkoorid(nimi);
+                }
 
                 // err : edetabelit pole
                 if (data.isEmpty()) throw new ExceptionEdetabelPuudub("Edetabelit nimega \"" + nimi + "\" ei eksisteeri.");
