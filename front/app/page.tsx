@@ -72,7 +72,7 @@ export default async function Home() {
                     </Link>
                   </td>
                   <td className="border text-center">
-                    {osaleja.ELO}
+                    {parseInt(osaleja.ELO)}
                   </td>
                   {
                     tasks.map((task, j) => {
@@ -99,8 +99,8 @@ export default async function Home() {
           <div className="flex flex-col">
             {
               tasks.map((task, i) => {
-                return <Link key={i} href={"/task/" + task.edetabelNimi} className="text-black">
-                  {`${i + 1}. ${task.edetabelNimi} (${task.userCount} osalejat)`}
+                return <Link key={i} href={"/task/" + task.edetabel_nimi} className="text-black">
+                  {`${i + 1}. ${task.edetabel_nimi} (${task.userCount} osalejat)`}
                 </Link>
               })
             }

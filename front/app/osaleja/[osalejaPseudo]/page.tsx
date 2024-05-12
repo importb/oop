@@ -65,7 +65,7 @@ import React from "react";
 //   ]
 // }
 
-async function getOsalejaData(osaleja) {
+async function getOsalejaData(osaleja: string) {
   const res: Response = await fetch("http://localhost:8080/osalejateEdetabel/" + osaleja);
 
   if (!res.ok) {
@@ -73,7 +73,7 @@ async function getOsalejaData(osaleja) {
   }
 
   const user: User = [...await res.json()][0];
-  // console.log(JSON.stringify(user));
+  console.log(JSON.stringify(user.ELO));
 
   return user;
 }
@@ -89,7 +89,7 @@ export default async function taskPage(props: any) {
         {pseudo}
       </h1>
       <p className="text-black text-xl">
-        {"Reiting: " + osalejaData.ELO}
+        {"Reiting: " + parseInt(osalejaData.ELO)}
       </p>
       <table className="table-auto text-black w-3/4 mt-4">
         <thead>

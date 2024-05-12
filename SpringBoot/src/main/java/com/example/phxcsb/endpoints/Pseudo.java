@@ -42,14 +42,14 @@ class Pseudo {
      * @param edetabeliteID - edetabelite ID-d kus osaleja osaleb.
      * @return - osaleja ELO.
      */
-    private int arvutaELO(List<Integer> vKohad, List<Integer> oKohad, List<Integer> edetabeliteID) {
-        int elo = 1000;
+    private double arvutaELO(List<Integer> vKohad, List<Integer> oKohad, List<Integer> edetabeliteID) {
+        double elo = 1000;
         int index = 0;
         for (int id : edetabeliteID) {
             int viimaneKoht = vKohad.get(id - 1);
             int osalejaKoht = oKohad.get(index);
 
-            elo += (100 - viimaneKoht) / osalejaKoht;
+            elo += (100.0 - (double)viimaneKoht) / (double)osalejaKoht;
 
             index++;
         }
