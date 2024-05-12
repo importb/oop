@@ -138,9 +138,11 @@ public class Edetabel {
             if (type == null) type = "last";
 
             // Kõik andmed
+            boolean dataNewSaadaval = !nimi.equals("kordusgrupid");
+
             if (type.equals("all")) {
                 List<Map<String, Object>> data;
-                if (nimi.equals("algarvuringid")) {
+                if (dataNewSaadaval) {
                     data = sqlLeiaEdetabeliSkooridNew(nimi);
                 }else {
                     data = sqlLeiaEdetabeliSkoorid(nimi);
@@ -155,7 +157,7 @@ public class Edetabel {
             // Ainult kõige viimased sisestatud andmed
             if (type.equals("last")) {
                 List<Map<String, Object>> data;
-                if (nimi.equals("algarvuringid")) {
+                if (dataNewSaadaval) {
                     data = sqlLeiaEdetabeliViimasedSkooridNew(nimi);
                 }else {
                     data = sqlLeiaEdetabeliViimasedSkoorid(nimi);
