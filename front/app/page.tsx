@@ -55,7 +55,7 @@ export default async function Home() {
                 {
                   tasks.map((task, i) => {
                     return <th className="border underline" key={i}>
-                      <Link href={"/task/" + task.edetabelNimi}>
+                      <Link href={"/task/" + task.edetabel_nimi}>
                         {"Ül " + (i + 1)}
                       </Link>
                     </th>
@@ -76,9 +76,9 @@ export default async function Home() {
                   </td>
                   {
                     tasks.map((task, j) => {
-                      if (osaleja.results.map(res => res.edetabel_nimi).includes(task.edetabelNimi)) {
+                      if (osaleja.results.map(res => res.edetabel_nimi).includes(task.edetabel_nimi)) {
                         return <td className="border text-center" key={j}>
-                          {osaleja.results.filter(res => res.edetabel_nimi == task.edetabelNimi)[0].koht + "."}
+                          {osaleja.results.filter(res => res.edetabel_nimi == task.edetabel_nimi)[0].koht + "."}
                         </td>
                       } else {
                         return <td className="border text-center" key={j}>

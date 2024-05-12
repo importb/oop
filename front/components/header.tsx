@@ -145,6 +145,7 @@ export default function Header(props: object) {
         alt={"Vaheta teemat"}
         width={100}
         height={30}
+        unoptimized={true}
       />
     </button>
 

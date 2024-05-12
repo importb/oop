@@ -78,8 +78,8 @@ export default function taskPage(props: any) {
     }
   }, [timestampIndex]);
 
-  return <main className="flex min-h-screen h-screen w-full flex-col items-center justify-between">
-    <div className="h-full w-full bg-white pb-16 pt-16">
+  return <main className="flex h-full w-full flex-col items-center justify-between">
+    <div className=" h-full w-full bg-white pb-16 pt-16">
       <div className="flex flex-row lg:justify-normal justify-center">
         {
           isCounting ?

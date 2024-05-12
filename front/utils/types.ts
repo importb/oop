@@ -16,7 +16,7 @@ interface User {
 type UserList = User[];
 
 interface Task {
-    edetabelNimi: string;
+    edetabel_nimi: string;
     userCount: number;
 }
 
