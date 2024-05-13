@@ -20,13 +20,33 @@ import java.util.Map;
 public class Edetabel {
     private final JdbcTemplate jdbcTemplate;
 
+    private final String[] ordering = {"", ",skoor * 1 ASC", ",skoor * 1 DESC, skoor2 * 1 ASC", ",SUBSTRING_INDEX(SUBSTRING_INDEX(skoor, ',', 1), '(', -1) * 1 + SUBSTRING_INDEX(SUBSTRING_INDEX(skoor, ',', -1), ')', 1) * 1 DESC, skoor2 * 1 ASC"};
+
     // Konstruktor
     public Edetabel(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Otsustab sortimise viisi edetabeli nime järgi.
+     * @param nimi - edetabeli nimi
+     * @return - index, mis ordering sobib.
+     */
+    private int leiaOrdering(String nimi) {
+        int orderIndex = 1;
+        if (nimi.equals("kuningad")) orderIndex = 3;
+        if (nimi.equals("unikaalsed_jaotused") || nimi.equals("jaotus_rühmadeks") || nimi.equals("kordusgrupid")) orderIndex = 2;
+
+        return orderIndex;
+    }
+
+    /**
+     * Leiab antud edetabelist kõik skoorid (tabel: 'data').
+     * @param nimi - edetabel nimi.
+     * @return - skoorid grupitud 'timestamp'-i järgi.
+     */
     private List<Map<String, Object>> sqlLeiaEdetabeliSkoorid(String nimi) {
-        String query = """
+        String query = String.format("""
                 SELECT
                     osaleja, skoor, skoor2, aeg
                 FROM
@@ -35,12 +55,18 @@ public class Edetabel {
                     edetabel_nimi = ?
                 ORDER BY
                     aeg asc
-                """;
+                    %s
+                """, ordering[leiaOrdering(nimi)]);
         return jdbcTemplate.queryForList(query, nimi);
     }
 
+    /**
+     * Leiab antud edetabelist uusimad skoorid (tabel: 'data').
+     * @param nimi - edetabel nimi.
+     * @return - skoorid grupitud 'timestamp'-i järgi.
+     */
     private List<Map<String, Object>> sqlLeiaEdetabeliViimasedSkoorid(String nimi) {
-        String query = """
+        String query = String.format("""
                 SELECT
                 	osaleja, skoor, skoor2, aeg
                 FROM
@@ -57,12 +83,19 @@ public class Edetabel {
                 	edetabel_nimi = ?
                 ORDER BY
                 	aeg desc
-                """;
+                    %s
+                """, ordering[leiaOrdering(nimi)]);
+
         return jdbcTemplate.queryForList(query, nimi, nimi);
     }
 
+    /**
+     * Leiab antud edetabelist kõik skoorid (tabel: 'dataNew').
+     * @param nimi - edetabel nimi.
+     * @return - skoorid grupitud 'timestamp'-i järgi.
+     */
     private List<Map<String, Object>> sqlLeiaEdetabeliSkooridNew(String nimi) {
-        String query = """
+        String query = String.format("""
                 SELECT
                     osaleja, skoor, skoor2, aeg
                 FROM
@@ -71,12 +104,19 @@ public class Edetabel {
                     edetabel_nimi = ?
                 ORDER BY
                     aeg asc
-                """;
+                    %s
+                """, ordering[leiaOrdering(nimi)]);
         return jdbcTemplate.queryForList(query, nimi);
     }
 
+    /**
+     * Leiab antud edetabelist uusimad skoorid (tabel: 'dataNew').
+     * @param nimi - edetabel nimi.
+     * @return - skoorid grupitud 'timestamp'-i järgi.
+     */
     private List<Map<String, Object>> sqlLeiaEdetabeliViimasedSkooridNew(String nimi) {
-        String query = """
+        // Query
+        String query = String.format("""
                 SELECT
                 	osaleja, skoor, skoor2, aeg
                 FROM
@@ -93,10 +133,16 @@ public class Edetabel {
                 	edetabel_nimi = ?
                 ORDER BY
                 	aeg desc
-                """;
+                	%s
+                """, ordering[leiaOrdering(nimi)]);
         return jdbcTemplate.queryForList(query, nimi, nimi);
     }
 
+    /**
+     * Vormistab saadud sql vastuse õigesse formaati.
+     * @param data - sql data.
+     * @return - vormistatud data.
+     */
     private List<Map<String, Object>> formatData(List<Map<String, Object>> data) {
         long prgUnixTime = 0;
 
