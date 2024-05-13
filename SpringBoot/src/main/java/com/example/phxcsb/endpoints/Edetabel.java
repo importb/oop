@@ -20,24 +20,20 @@ import java.util.Map;
 public class Edetabel {
     private final JdbcTemplate jdbcTemplate;
 
-    private final String[] ordering = {"", ",skoor * 1 ASC", ",skoor * 1 DESC, skoor2 * 1 ASC", ",SUBSTRING_INDEX(SUBSTRING_INDEX(skoor, ',', 1), '(', -1) * 1 + SUBSTRING_INDEX(SUBSTRING_INDEX(skoor, ',', -1), ')', 1) * 1 DESC, skoor2 * 1 ASC"};
-
     // Konstruktor
     public Edetabel(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
-     * Otsustab sortimise viisi edetabeli nime järgi.
+     * Tagastab edetabeli sortimise viisi.
      * @param nimi - edetabeli nimi
-     * @return - index, mis ordering sobib.
+     * @return - ORDER BY string.
      */
-    private int leiaOrdering(String nimi) {
-        int orderIndex = 1;
-        if (nimi.equals("kuningad")) orderIndex = 3;
-        if (nimi.equals("unikaalsed_jaotused") || nimi.equals("jaotus_rühmadeks") || nimi.equals("kordusgrupid")) orderIndex = 2;
-
-        return orderIndex;
+    private Object leiaOrdering(String nimi) {
+        String query = "SELECT sortimine FROM edetabelid WHERE edetabel_nimi = ?";
+        List<Map<String, Object>> data = jdbcTemplate.queryForList(query, nimi);
+        return data.get(0).get("sortimine");
     }
 
     /**
@@ -56,7 +52,7 @@ public class Edetabel {
                 ORDER BY
                     aeg asc
                     %s
-                """, ordering[leiaOrdering(nimi)]);
+                """, leiaOrdering(nimi));
         return jdbcTemplate.queryForList(query, nimi);
     }
 
@@ -84,7 +80,7 @@ public class Edetabel {
                 ORDER BY
                 	aeg desc
                     %s
-                """, ordering[leiaOrdering(nimi)]);
+                """, leiaOrdering(nimi));
 
         return jdbcTemplate.queryForList(query, nimi, nimi);
     }
@@ -105,7 +101,7 @@ public class Edetabel {
                 ORDER BY
                     aeg asc
                     %s
-                """, ordering[leiaOrdering(nimi)]);
+                """, leiaOrdering(nimi));
         return jdbcTemplate.queryForList(query, nimi);
     }
 
@@ -134,7 +130,7 @@ public class Edetabel {
                 ORDER BY
                 	aeg desc
                 	%s
-                """, ordering[leiaOrdering(nimi)]);
+                """, leiaOrdering(nimi));
         return jdbcTemplate.queryForList(query, nimi, nimi);
     }
 
