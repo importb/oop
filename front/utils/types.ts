@@ -1,9 +1,9 @@
 interface Result {
     edetabel_nimi: string;
-    skoor1: number;
-    skoor1Unit: string;
+    skoor: number;
+    skoor1ühik: string;
     skoor2: number | null;
-    skoor2Unit: string | null;
+    skoor2ühik: string | null;
     koht: number | undefined;
 }
 
@@ -27,4 +27,12 @@ interface Searchable {
    value: string;
 }
 
-type Searchables = Searchable[];
+interface SingleEdetabel {
+    timestamp: number;
+    results: {
+        skoor: string,
+        skoor2: number,
+        pseudo: string;
+    }[];
+}
+

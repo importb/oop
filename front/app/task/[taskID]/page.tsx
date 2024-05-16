@@ -8,14 +8,14 @@ export default function taskPage(props: any) {
 
   const [currentTimestamp, setCurrentTimestamp] = useState<string | undefined>("0");
   // console.log(getHumanReadableDate(fetchedData.at(-1)?.timestamp));
-  const [curLeaderboard, setCurLeaderboard] = useState([]);
+  const [curLeaderboard, setCurLeaderboard] = useState<SingleEdetabel | undefined>(undefined);
 
 
-  const [allLeaderboards, setAllLeaderboards] = useState([]);
+  const [allLeaderboards, setAllLeaderboards] = useState<SingleEdetabel[]>([]);
   // peale esimest painti, fetchime kõik edetabelid ajas
   useEffect(() => {
     async function f() {
-      const response = await fetch("http://localhost:8080/edetabel/" + taskName + "?type=all");
+      const response = await fetch("http://localhost:8080/edetabel/" + encodeURI(taskName) + "?type=all");
 
       if (!response.ok) {
         console.error("Failed to fetch");

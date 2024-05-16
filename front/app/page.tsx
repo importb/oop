@@ -72,7 +72,7 @@ export default async function Home() {
                     </Link>
                   </td>
                   <td className="border text-center">
-                    {parseInt(osaleja.ELO)}
+                    {parseInt(osaleja.ELO.toString())}
                   </td>
                   {
                     tasks.map((task, j) => {

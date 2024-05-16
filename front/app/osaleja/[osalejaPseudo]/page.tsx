@@ -1,70 +1,6 @@
 import Link from "next/link";
 import React from "react";
 
-// const osalejaData = {
-//   "osaleja": "mc_CHAozz",
-//   "ELO": 1200,
-//   "results": [
-//     {
-//       "edetabel_nimi": "algarvuringid",
-//       "koht": 1,
-//       "skoor": "2.5",
-//       "skoor2": null,
-//       "skoor1ühik": "ms",
-//       "skoor2ühik": null
-//     },
-//     {
-//       "edetabel_nimi": "temperatuurid",
-//       "koht": 2,
-//       "skoor": "4769",
-//       "skoor2": null,
-//       "skoor1ühik": "ms",
-//       "skoor2ühik": null
-//     },
-//     {
-//       "edetabel_nimi": "korduvad_read",
-//       "koht": 3,
-//       "skoor": "121",
-//       "skoor2": null,
-//       "skoor1ühik": "ms",
-//       "skoor2ühik": null
-//     },
-//     {
-//       "edetabel_nimi": "ruut_ühtedest",
-//       "koht": 19,
-//       "skoor": "19.9",
-//       "skoor2": null,
-//       "skoor1ühik": "ms",
-//       "skoor2ühik": null
-//     },
-//     {
-//       "edetabel_nimi": "summad_ja_sõnepõime",
-//       "koht": 1,
-//       "skoor": "2.5",
-//       "skoor2": null,
-//       "skoor1ühik": "ms",
-//       "skoor2ühik": null
-//     },
-//     {
-//       "edetabel_nimi": "jaotus_rühmadeks",
-//       "koht": 4,
-//       "skoor": "28",
-//       "skoor2": null,
-//       "skoor1ühik": "ms",
-//       "skoor2ühik": null
-//     },
-//     {
-//       "edetabel_nimi": "kuningad",
-//       "koht": 1,
-//       "skoor": "(10, 9)",
-//       "skoor2": "539.8",
-//       "skoor1ühik": null,
-//       "skoor2ühik": "ms"
-//     },
-    
-//   ]
-// }
-
 async function getOsalejaData(osaleja: string) {
   const res: Response = await fetch("http://localhost:8080/osalejateEdetabel/" + osaleja);
 
@@ -89,7 +25,7 @@ export default async function taskPage(props: any) {
         {pseudo}
       </h1>
       <p className="text-black text-xl">
-        {"Reiting: " + parseInt(osalejaData.ELO)}
+        {"Reiting: " + parseInt(osalejaData.ELO.toString())}
       </p>
       <table className="table-auto text-black w-3/4 mt-4">
         <thead>

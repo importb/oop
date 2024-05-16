@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
 
@@ -144,7 +144,7 @@ public class Edetabel {
 
         List<Map<String, Object>> vormistatud = new ArrayList<>();
 
-        Map<String, Object> root = new HashMap<>();
+        Map<String, Object> root = new TreeMap<>();
 
         for (Map<String, Object> map : data) {
             Timestamp aeg = (Timestamp) map.get("aeg");
@@ -152,14 +152,14 @@ public class Edetabel {
 
             if (prgUnixTime != unixTime) {
                 if (!root.isEmpty()) vormistatud.add(root);
-                root = new HashMap<>();
+                root = new TreeMap<>();
 
                 root.put("timestamp", unixTime);
                 root.put("results", new ArrayList<Map<String, Object>>());
                 prgUnixTime = unixTime;
             }
 
-            Map<String, Object> skoor = new HashMap<>();
+            Map<String, Object> skoor = new TreeMap<>();
             skoor.put("skoor", map.get("skoor"));
             skoor.put("skoor2", map.get("skoor2"));
             skoor.put("pseudo", map.get("osaleja"));
