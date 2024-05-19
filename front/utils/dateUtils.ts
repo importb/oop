@@ -1,6 +1,6 @@
 export {getHumanReadableDate};
 
-function getHumanReadableDate(unixTimestamp: string | undefined): string {
+function getHumanReadableDate(unixTimestamp: string): string {
     if (typeof unixTimestamp == undefined)
         return "";
 

@@ -3,12 +3,15 @@ import React, { useEffect, useState } from "react";
 import { getHumanReadableDate } from "@/utils/dateUtils";
 import Link from "next/link";
 
-export default function taskPage(props: any) {
+export default function TaskPage(props: any) {
   const taskName = decodeURI(props.params.taskID);
 
-  const [currentTimestamp, setCurrentTimestamp] = useState<string | undefined>("0");
+  const [currentTimestamp, setCurrentTimestamp] = useState<string>("0");
   // console.log(getHumanReadableDate(fetchedData.at(-1)?.timestamp));
-  const [curLeaderboard, setCurLeaderboard] = useState<SingleEdetabel | undefined>(undefined);
+  const [curLeaderboard, setCurLeaderboard] = useState<SingleEdetabel>({
+    timestamp: Date.now(),
+    results: []
+  });
 
 
   const [allLeaderboards, setAllLeaderboards] = useState<SingleEdetabel[]>([]);
@@ -66,9 +69,12 @@ export default function taskPage(props: any) {
   }, [isCounting]);
 
   useEffect(() => {
-    setCurLeaderboard(allLeaderboards[timestampIndex]?.results);
-    setCurrentTimestamp(allLeaderboards[timestampIndex]?.timestamp);
-  }, [timestampIndex]);
+    const leaderboard = allLeaderboards[timestampIndex];
+    if (leaderboard) {
+      setCurLeaderboard(leaderboard);
+      setCurrentTimestamp(leaderboard.timestamp.toString());
+    }
+  }, [timestampIndex, allLeaderboards]);
 
   useEffect(() => {
     console.log(timestampIndex, allLeaderboards.length - 1);
@@ -115,40 +121,40 @@ export default function taskPage(props: any) {
       </div>
       <div className="flex flex-col items-center mt-20 lg:mt-4">
         {
-          curLeaderboard?.length >= 1 ?
+          curLeaderboard?.results.length >= 1 ?
             <div className=" bg-slate-300 py-4 rounded-md w-96 shadow-sm">
               <p className="text-black text-center text-lg hover:underline">
-                <Link href={"/osaleja/" + curLeaderboard[0].pseudo}>
-                  {"1. " + curLeaderboard[0].pseudo + " " + curLeaderboard[0].skoor + (curLeaderboard[0].skoor2 ? ", " + curLeaderboard[0].skoor2 : "")}
+                <Link href={"/osaleja/" + curLeaderboard.results[0].pseudo}>
+                  {"1. " + curLeaderboard.results[0].pseudo + " " + curLeaderboard.results[0].skoor + (curLeaderboard.results[0].skoor2 ? ", " + curLeaderboard.results[0].skoor2 : "")}
                 </Link>
               </p>
             </div> : <></>
         }
         {
-          curLeaderboard?.length >= 2 ?
+          curLeaderboard?.results.length >= 2 ?
             <div className=" bg-slate-300 py-4 rounded-md w-96 mt-2 shadow-sm">
               <p className="text-black text-center text-lg hover:underline">
-                <Link href={"/osaleja/" + curLeaderboard[1].pseudo}>
-                  {"2. " + curLeaderboard[1].pseudo + " " + curLeaderboard[1].skoor + (curLeaderboard[1].skoor2 ? ", " + curLeaderboard[1].skoor2 : "")}
+                <Link href={"/osaleja/" + curLeaderboard.results[1].pseudo}>
+                  {"2. " + curLeaderboard.results[1].pseudo + " " + curLeaderboard.results[1].skoor + (curLeaderboard.results[1].skoor2 ? ", " + curLeaderboard.results[1].skoor2 : "")}
                 </Link>
               </p>
             </div> : <></>
         }
         {
-          curLeaderboard?.length >= 3 ?
+          curLeaderboard?.results.length >= 3 ?
             <div className=" bg-slate-300 py-4 rounded-md w-96 mt-2 mb-1 shadow-sm">
               <p className="text-black text-center text-lg hover:underline">
-                <Link href={"/osaleja/" + curLeaderboard[2].pseudo}>
-                  {"3. " + curLeaderboard[2].pseudo + " " + curLeaderboard[2].skoor + (curLeaderboard[2].skoor2 ? ", " + curLeaderboard[2].skoor2 : "")}
+                <Link href={"/osaleja/" + curLeaderboard.results[2].pseudo}>
+                  {"3. " + curLeaderboard.results[2].pseudo + " " + curLeaderboard.results[2].skoor + (curLeaderboard.results[2].skoor2 ? ", " + curLeaderboard.results[2].skoor2 : "")}
                 </Link>
               </p>
             </div> : <></>
         }
         {
-          curLeaderboard?.slice(3).map((osaleja, i) => {
+          curLeaderboard?.results.slice(3).map((osaleja, i) => {
             return <div className=" bg-slate-300 py-2 rounded-md w-64 mt-1 shadow-sm" key={i + 4}>
               <p className="text-black text-center text-md hover:underline">
-                <Link href={"/osaleja/" + curLeaderboard[i+3].pseudo}>
+                <Link href={"/osaleja/" + osaleja.pseudo}>
                   {(i + 4) + ". " + osaleja.pseudo + " " + osaleja.skoor + (osaleja.skoor2 ? ", " + osaleja.skoor2 : "")}
                 </Link>
               </p>
