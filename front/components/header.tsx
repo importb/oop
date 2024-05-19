@@ -18,8 +18,8 @@ export default function Header(props: object) {
   // plaan on panna kõik searchabled session storagesse, et teha efektiivsemaks päringuid
   useEffect(() => {
     const a = async () => {
-      const resp1 = await fetch("http://localhost:8080/osalejateEdetabel");
-      const resp2 = await fetch("http://localhost:8080/ulesanded");
+      const resp1 = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/osalejateEdetabel");
+      const resp2 = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/ulesanded");
 
       if (!resp1.ok || !resp2.ok) {
         console.error("Failed to fetch");

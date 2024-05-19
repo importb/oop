@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 async function getUsers(): Promise<UserList> {
-  const res: Response = await fetch("http://localhost:8080/osalejateEdetabel");
+  const res: Response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/osalejateEdetabel");
 
   if (!res.ok) {
     throw new Error("Failed to fetch data");
@@ -23,7 +23,7 @@ async function getUsers(): Promise<UserList> {
 }
 
 async function getTasks(): Promise<TaskList> {
-  const res: Response = await fetch("http://localhost:8080/ulesanded");
+  const res: Response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/ulesanded");
 
   if (!res.ok) {
     throw new Error("Failed to fetch data");

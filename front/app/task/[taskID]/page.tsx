@@ -18,7 +18,7 @@ export default function TaskPage(props: any) {
   // peale esimest painti, fetchime kõik edetabelid ajas
   useEffect(() => {
     async function f() {
-      const response = await fetch("http://localhost:8080/edetabel/" + encodeURI(taskName) + "?type=all");
+      const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL +  "/edetabel/" + encodeURI(taskName) + "?type=all");
 
       if (!response.ok) {
         console.error("Failed to fetch");

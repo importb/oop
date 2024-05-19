@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 
 async function getOsalejaData(osaleja: string) {
-  const res: Response = await fetch("http://localhost:8080/osalejateEdetabel/" + osaleja);
+  const res: Response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/osalejateEdetabel/" + osaleja);
 
   if (!res.ok) {
     throw new Error("Failed to fetch data");
