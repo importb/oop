@@ -32,8 +32,7 @@ export default function TaskPage(props: any) {
 
 
       // hiljem maha:
-      setCurLeaderboard(jsonData.at(-1)?.results);
-      setCurrentTimestamp(jsonData.at(-1)?.timestamp)
+      setTimestampIndex(jsonData.length - 1);
     }
 
     f();
@@ -121,7 +120,7 @@ export default function TaskPage(props: any) {
       </div>
       <div className="flex flex-col items-center mt-20 lg:mt-4">
         {
-          curLeaderboard?.results.length >= 1 ?
+          curLeaderboard?.results?.length >= 1 ?
             <div className=" bg-slate-300 py-4 rounded-md w-96 shadow-sm">
               <p className="text-black text-center text-lg hover:underline">
                 <Link href={"/osaleja/" + curLeaderboard.results[0].pseudo}>
@@ -131,7 +130,7 @@ export default function TaskPage(props: any) {
             </div> : <></>
         }
         {
-          curLeaderboard?.results.length >= 2 ?
+          curLeaderboard?.results?.length >= 2 ?
             <div className=" bg-slate-300 py-4 rounded-md w-96 mt-2 shadow-sm">
               <p className="text-black text-center text-lg hover:underline">
                 <Link href={"/osaleja/" + curLeaderboard.results[1].pseudo}>
@@ -141,7 +140,7 @@ export default function TaskPage(props: any) {
             </div> : <></>
         }
         {
-          curLeaderboard?.results.length >= 3 ?
+          curLeaderboard?.results?.length >= 3 ?
             <div className=" bg-slate-300 py-4 rounded-md w-96 mt-2 mb-1 shadow-sm">
               <p className="text-black text-center text-lg hover:underline">
                 <Link href={"/osaleja/" + curLeaderboard.results[2].pseudo}>
@@ -151,7 +150,7 @@ export default function TaskPage(props: any) {
             </div> : <></>
         }
         {
-          curLeaderboard?.results.slice(3).map((osaleja, i) => {
+          curLeaderboard?.results?.slice(3).map((osaleja, i) => {
             return <div className=" bg-slate-300 py-2 rounded-md w-64 mt-1 shadow-sm" key={i + 4}>
               <p className="text-black text-center text-md hover:underline">
                 <Link href={"/osaleja/" + osaleja.pseudo}>
