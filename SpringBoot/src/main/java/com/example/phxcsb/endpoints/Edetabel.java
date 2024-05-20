@@ -44,13 +44,13 @@ public class Edetabel {
     private List<Map<String, Object>> sqlLeiaEdetabeliSkooridNew(String nimi) {
         String query = String.format("""
                 SELECT
-                    osaleja, skoor, skoor2, aeg
+                    d.osaleja, d.skoor, d.skoor2, d.aeg
                 FROM
-                    dataNew
+                    dataNew d
                 WHERE
-                    edetabel_nimi = ?
+                    d.edetabel_nimi = ?
                 ORDER BY
-                    aeg asc
+                    d.aeg asc
                     %s
                 """, leiaOrdering(nimi));
         return jdbcTemplate.queryForList(query, nimi);
@@ -65,22 +65,24 @@ public class Edetabel {
         // Query
         String query = String.format("""
                 SELECT
-                	osaleja, skoor, skoor2, aeg
+                    d.osaleja, d.skoor, d.skoor2, d.aeg
                 FROM
-                	dataNew d
+                    dataNew d
+                INNER JOIN (
+                    SELECT
+                        edetabel_nimi, MAX(aeg) as max_aeg
+                    FROM
+                        dataNew
+                    WHERE
+                        edetabel_nimi = ?
+                    GROUP BY
+                        edetabel_nimi
+                ) subquery ON d.edetabel_nimi = subquery.edetabel_nimi AND d.aeg = subquery.max_aeg
                 WHERE
-                	aeg IN (
-                		SELECT
-                			MAX(aeg)
-                		FROM
-                			dataNew
-                		WHERE
-                			edetabel_nimi = ?
-                		) AND
-                	edetabel_nimi = ?
+                    d.edetabel_nimi = ?
                 ORDER BY
-                	aeg desc
-                	%s
+                    d.aeg DESC
+                    %s
                 """, leiaOrdering(nimi));
         return jdbcTemplate.queryForList(query, nimi, nimi);
     }
