@@ -212,7 +212,10 @@ class Pseudo {
                     MAX(CASE WHEN edetabel_id = 8 THEN skoor END) AS skoor_8,
                     MAX(CASE WHEN edetabel_id = 8 THEN skoor2 END) AS skoor2_8,
                     MAX(CASE WHEN edetabel_id = 8 THEN edetabel_nimi END) AS edetabel_nimi_8,
-                    MAX(CASE WHEN edetabel_id = 8 THEN koht END) AS koht_8
+                    MAX(CASE WHEN edetabel_id = 8 THEN koht END) AS koht_8,
+                    MAX(CASE WHEN edetabel_id = 9 THEN skoor2 END) AS skoor2_9,
+                    MAX(CASE WHEN edetabel_id = 9 THEN edetabel_nimi END) AS edetabel_nimi_9,
+                    MAX(CASE WHEN edetabel_id = 9 THEN koht END) AS koht_9
                 FROM
                     dataFinal
                 GROUP BY
@@ -237,7 +240,7 @@ class Pseudo {
             List<Integer> oKohad = new ArrayList<>();
             List<Integer> edetabeliteID = new ArrayList<>();
 
-            for (int i = 1; i < 9; i++) {
+            for (int i = 1; i < 10; i++) {
                 if (row.get("edetabel_nimi_" + i) == null) continue;
 
                 // elo
