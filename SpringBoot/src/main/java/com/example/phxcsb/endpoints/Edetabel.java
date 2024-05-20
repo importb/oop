@@ -37,55 +37,6 @@ public class Edetabel {
     }
 
     /**
-     * Leiab antud edetabelist kõik skoorid (tabel: 'data').
-     * @param nimi - edetabel nimi.
-     * @return - skoorid grupitud 'timestamp'-i järgi.
-     */
-    private List<Map<String, Object>> sqlLeiaEdetabeliSkoorid(String nimi) {
-        String query = String.format("""
-                SELECT
-                    osaleja, skoor, skoor2, aeg
-                FROM
-                    data
-                WHERE
-                    edetabel_nimi = ?
-                ORDER BY
-                    aeg asc
-                    %s
-                """, leiaOrdering(nimi));
-        return jdbcTemplate.queryForList(query, nimi);
-    }
-
-    /**
-     * Leiab antud edetabelist uusimad skoorid (tabel: 'data').
-     * @param nimi - edetabel nimi.
-     * @return - skoorid grupitud 'timestamp'-i järgi.
-     */
-    private List<Map<String, Object>> sqlLeiaEdetabeliViimasedSkoorid(String nimi) {
-        String query = String.format("""
-                SELECT
-                	osaleja, skoor, skoor2, aeg
-                FROM
-                	data d
-                WHERE
-                	aeg IN (
-                		SELECT
-                			MAX(aeg)
-                		FROM
-                			data
-                		WHERE
-                			edetabel_nimi = ?
-                		) AND
-                	edetabel_nimi = ?
-                ORDER BY
-                	aeg desc
-                    %s
-                """, leiaOrdering(nimi));
-
-        return jdbcTemplate.queryForList(query, nimi, nimi);
-    }
-
-    /**
      * Leiab antud edetabelist kõik skoorid (tabel: 'dataNew').
      * @param nimi - edetabel nimi.
      * @return - skoorid grupitud 'timestamp'-i järgi.
@@ -172,7 +123,7 @@ public class Edetabel {
         return vormistatud;
     }
 
-    @CrossOrigin(origins = {"http://localhost:3000", "http://phxc.ee", "http://46.101.217.148:3000"})
+    @CrossOrigin(origins = {"http://localhost:3000", "http://phxc2.ee", "http://46.101.217.148:3000"})
     @GetMapping(value = "/edetabel/{nimi}", produces = "application/json")
     private Object leiaEdetabel(@PathVariable String nimi, @RequestParam(required = false) String type) throws ExceptionEdetabelPuudub {
         if (nimi != null) {
@@ -180,15 +131,8 @@ public class Edetabel {
             if (type == null) type = "last";
 
             // Kõik andmed
-            boolean dataNewSaadaval = !nimi.equals("kordusgrupid");
-
             if (type.equals("all")) {
-                List<Map<String, Object>> data;
-                if (dataNewSaadaval) {
-                    data = sqlLeiaEdetabeliSkooridNew(nimi);
-                }else {
-                    data = sqlLeiaEdetabeliSkoorid(nimi);
-                }
+                List<Map<String, Object>> data = sqlLeiaEdetabeliSkooridNew(nimi);
 
                 // err : edetabelit pole
                 if (data.isEmpty()) throw new ExceptionEdetabelPuudub("Edetabelit nimega \"" + nimi + "\" ei eksisteeri.");
@@ -198,12 +142,7 @@ public class Edetabel {
 
             // Ainult kõige viimased sisestatud andmed
             if (type.equals("last")) {
-                List<Map<String, Object>> data;
-                if (dataNewSaadaval) {
-                    data = sqlLeiaEdetabeliViimasedSkooridNew(nimi);
-                }else {
-                    data = sqlLeiaEdetabeliViimasedSkoorid(nimi);
-                }
+                List<Map<String, Object>> data = sqlLeiaEdetabeliViimasedSkooridNew(nimi);
 
                 // err : edetabelit pole
                 if (data.isEmpty()) throw new ExceptionEdetabelPuudub("Edetabelit nimega \"" + nimi + "\" ei eksisteeri.");
