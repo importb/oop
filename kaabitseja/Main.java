@@ -106,7 +106,7 @@ public class Main {
             }
 
             System.out.println(relevantsedEdetabelid);
-            StringBuilder päring = new StringBuilder("insert into data (edetabel_id, edetabel_nimi, osaleja, skoor, skoor2, aeg) values ");
+            StringBuilder päring = new StringBuilder("insert into dataNew (edetabel_id, edetabel_nimi, osaleja, skoor, skoor2, aeg) values ");
 
             int addedCount = 0;
 
