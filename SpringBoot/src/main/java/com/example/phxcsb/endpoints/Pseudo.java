@@ -174,7 +174,7 @@ class Pseudo {
         return ResponseEntity.status(HttpStatus.OK).body(vormistatud);
     }
 
-    @CrossOrigin(origins = {"http://localhost:3000", "http://phxc.ee", "http://46.101.217.148:3000"})
+    @CrossOrigin(origins = {"http://localhost:3000", "http://phxc2.ee", "http://46.101.217.148:3000"})
     @GetMapping(value = "/osalejateEdetabel", produces = "application/json")
     private Object leiaOsalejad() {
         // oh god, what have I created. kui on parem idee, ss fix :).
