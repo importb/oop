@@ -25,7 +25,7 @@ class Ulesanded {
      * Tagastab JSON kõikide edetabelite nimede ja osalejate arvuga.
      * @return - JSON
      */
-    @CrossOrigin(origins = {"http://localhost:3000", "http://phxc.ee", "http://46.101.217.148:3000"})
+    @CrossOrigin(origins = {"http://localhost:3000", "http://phxc2.ee", "http://46.101.217.148:3000"})
     @GetMapping(value = "/ulesanded", produces = "application/json")
     private Object leiaUlesanded() {
         String query = """
