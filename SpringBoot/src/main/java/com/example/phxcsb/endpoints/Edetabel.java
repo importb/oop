@@ -125,7 +125,7 @@ public class Edetabel {
         return vormistatud;
     }
 
-    @CrossOrigin(origins = {"http://localhost:3000", "http://phxc2.ee", "http://46.101.217.148:3000"})
+    @CrossOrigin(origins = {"http://localhost:3000", "https://phxc2.ee", "http://46.101.217.148:3000", "https://www.phxc2.ee"})
     @GetMapping(value = "/edetabel/{nimi}", produces = "application/json")
     private Object leiaEdetabel(@PathVariable String nimi, @RequestParam(required = false) String type) throws ExceptionEdetabelPuudub {
         if (nimi != null) {
