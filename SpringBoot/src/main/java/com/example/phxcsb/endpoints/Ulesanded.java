@@ -33,8 +33,8 @@ class Ulesanded {
                     df.edetabel_nimi,
                     COUNT(*) as userCount,
                     CASE 
-                        WHEN NOW() > ed.deadline THEN 'true'
-                        ELSE 'false'
+                        WHEN NOW() > ed.deadline THEN true
+                        ELSE false
                     END as finished
                 FROM
                     dataNew df
