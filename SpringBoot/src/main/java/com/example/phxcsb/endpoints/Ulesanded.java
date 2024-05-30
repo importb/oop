@@ -29,15 +29,30 @@ class Ulesanded {
     @GetMapping(value = "/ulesanded", produces = "application/json")
     private Object leiaUlesanded() {
         String query = """
-                SELECT
-                    edetabel_nimi,
-                    count(koht) as userCount
+                SELECT 
+                    df.edetabel_nimi,
+                    COUNT(*) as userCount,
+                    CASE 
+                        WHEN NOW() > ed.deadline THEN 'true'
+                        ELSE 'false'
+                    END as finished
                 FROM
-                	dataFinal
-                GROUP BY
-                	edetabel_nimi
-                ORDER BY
-                    edetabel_id
+                    dataNew df
+                JOIN (
+                    SELECT 
+                        edetabel_nimi,
+                        MAX(aeg) as newest_aeg
+                    FROM 
+                        dataNew
+                    GROUP BY 
+                        edetabel_nimi
+                ) viimane ON df.edetabel_nimi = viimane.edetabel_nimi AND df.aeg = viimane.newest_aeg
+                JOIN 
+                    edetabelid ed ON df.edetabel_nimi = ed.edetabel_nimi
+                GROUP BY 
+                    df.edetabel_nimi, ed.deadline
+                ORDER BY 
+                    df.aeg;
                 """;
 
         // Saadud vastus
