@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 async function getUsers(): Promise<UserList> {
-  const res: Response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/osalejateEdetabel");
+  const res: Response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/osalejateEdetabel", { next: {revalidate: 60}});
 
   if (!res.ok) {
     throw new Error("Failed to fetch data");
@@ -23,7 +23,7 @@ async function getUsers(): Promise<UserList> {
 }
 
 async function getTasks(): Promise<TaskList> {
-  const res: Response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/ulesanded");
+  const res: Response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/ulesanded", { next: {revalidate: 60}});
 
   if (!res.ok) {
     throw new Error("Failed to fetch data");
@@ -99,7 +99,7 @@ export default async function Home() {
           <div className="flex flex-col">
             {
               tasks.map((task, i) => {
-                return <Link key={i} href={"/task/" + task.edetabel_nimi} className="text-black">
+                return <Link key={i} href={"/task/" + task.edetabel_nimi} className={task.finished ? "text-black" : "text-green-600"}>
                   {`${i + 1}. ${task.edetabel_nimi} (${task.userCount} osalejat)`}
                 </Link>
               })

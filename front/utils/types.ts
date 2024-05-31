@@ -18,6 +18,7 @@ type UserList = User[];
 interface Task {
     edetabel_nimi: string;
     userCount: number;
+    finished: boolean | undefined;
 }
 
 type TaskList = Task[];
