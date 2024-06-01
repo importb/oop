@@ -1,37 +1,40 @@
 # oop projekt - phxc lehe kaabitseja
 
+Külasta lehte: [https://phxc2.ee](https://phxc2.ee)
+
 Autorid: Rainer Vana, Kevin Akkermann
 
 ## Programmi eesmärk
 
 Aines Programmeerimine II (LTAT.03.007) on näha iga ülesande puhul edetabel. Seal näeb iga ülesande kohta eraldi edetabelit, kuid puudub nende andmete visualiseerimise võimalus. 
 
-lõppprodukti ideed:
+Võimalused
 
-* võimaldab vaadata mingi ELO süsteemi järgi parimaid
-* võimaldab vaadata iga kasutaja performancete kokkuvõtet
-* saab vaadata mingi ülesannete edetabelit iga 5 minuti tagant? (nõuab cron jobi, mis kirjutab db-sse tolle hetke seisu)
-* contest management system laadne koha displaymine per ülesanne?
-* vb auth, et kui suudad sisse logida õis vms, ss saad näha ka teisi, kes on oma nime ühendanud pseudoga?
-
-db struktuur:
-
-edetabelid:
-
-| nimi | deadline |
-| ---- | ------ |
-| varchar(50) | datetime |
+* Võimaldab vaadata ELO süsteemi järgi parimaid
+* Võimaldab vaadata iga kasutaja tulemuste kokkuvõtet
+* Saab vaadata mingi ülesannete edetabelit iga 5 minuti tagant. Selleks saab animeerida edetabeleid ja näha, kes millal esitas oma lahenduse jms
 
 
-data: (kaabitsetud andmed)
-| edetabel_id | edetabel_nimi | osaleja | skoor | aeg |
-| ----------- | ------------- | ------- | ----- | --- |
-| int(11) | varchar(30) | varchar(30) | float | timestamp |
+## Andmebaasi struktuur:
 
-users (TODO hiljem): 
-| id | pseudo | real name |
-| -- | ------ | --------- |
-| PK serial | varchar(20) | varchar(40) |
+**edetabelid**:
+
+| nimi        | deadline | sortimine    | 
+| ----        | ------   | ---          |
+| varchar(50) | datetime | varchar(255) |
+
+> kasutades sortimine veeru väärtust sorteeritakse ELO jms päringutega tulemusi. Näiteks on sortimine ",d.skoor * 1 ASC", ",d.skoor * 1 DESC, d.skoor2 * 1 ASC"
+
+**dataNew**: (kaabitsetud andmed)
+| edetabel_id | edetabel_nimi | osaleja     | skoor | skoor2        | aeg       |
+| ----------- | ------------- | -------     | ----- | ---           | ---       |
+| int(11)     | varchar(30)   | varchar(30) | float | float \| null | timestamp |
+
+**dataFinal**: (lõpptulemused)
+| edetabel_id | edetabel_nimi | osaleja     | skoor | skoor2        | aeg       | koht    |
+| ----------- | ------------- | -------     | ----- | ---           | ---       | ---     |
+| int(11)     | varchar(30)   | varchar(30) | float | float \| null | timestamp | int(11) |
+
 
 ## Kaabitseja
 
@@ -49,12 +52,12 @@ Klasside ja funktsioonide info:
 
 Kolmekihiline Next.js / Spring Boot / MySQL rakendus, mis näitab kokkuvõtteid terve kursuse peale
 
-## Front end features (in progress)
+## API endpointid
 
 ### 1. ELO edetabeli visualiseerimine
 
 Potentsiaalne lahendus:
-* API endpoint /users
+* API endpoint GET /users
 * Iga nädala lõpus kirjutame uude DB tabelisse uuesti arvutatud ELO seisu (nt Cron-iga)
 * Tagastab: 
 
@@ -88,7 +91,7 @@ Potentsiaalne lahendus:
 ### 2. Ühe kindla kasutaja tulemused
 
 Potentsiaalne lahendus:
-* API endpoint /users/{pseudo}
+* API endpoint GET /users/{pseudo}
 * Getib andmebaasist kõik selle kasutaja tulemused (igast edetabelist, vali viimane timestamp ja sorteeri kõik tulemused ning ütle, mitmes see kasutaja on)
 * Tagastab:
 
@@ -114,7 +117,7 @@ Potentsiaalne lahendus:
 Kuna iga 5 minuti tagant on scrapetud, siis saame näidata animatsioonidega, kuidas ajas need tulemused muutusid
 
 Potentsiaalne lahendus:
-* API endpoint /results/{edetabel_nimi}?type=<all | last>
+* API endpoint GET /results/{edetabel_nimi}?type=<all | last>
 * last tagastab ainult viimase timestampi
 * Tagastab kasvavas järjekorras timestampidega:
 
