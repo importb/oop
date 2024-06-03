@@ -32,7 +32,8 @@ class Pseudo {
             {null, "ms"},
             {null, "ms"},
             {null, "ms"},
-            {null, "ms"}
+            {null, "ms"},
+            {"ms", null}
     };
 
     /**
@@ -136,9 +137,10 @@ class Pseudo {
                     MAX(CASE WHEN edetabel_id = 7 THEN koht END) AS koht_7,
                     MAX(CASE WHEN edetabel_id = 8 THEN edetabel_nimi END) AS edetabel_nimi_8,
                     MAX(CASE WHEN edetabel_id = 8 THEN koht END) AS koht_8,
-                    MAX(CASE WHEN edetabel_id = 9 THEN skoor2 END) AS skoor2_9,
                     MAX(CASE WHEN edetabel_id = 9 THEN edetabel_nimi END) AS edetabel_nimi_9,
-                    MAX(CASE WHEN edetabel_id = 9 THEN koht END) AS koht_9
+                    MAX(CASE WHEN edetabel_id = 9 THEN koht END) AS koht_9,
+                    MAX(CASE WHEN edetabel_id = 10 THEN edetabel_nimi END) AS edetabel_nimi_10,
+                    MAX(CASE WHEN edetabel_id = 10 THEN koht END) AS koht_10
                 FROM
                     dataFinal
                 GROUP BY
@@ -160,7 +162,7 @@ class Pseudo {
             // osaleja nimi
             mapVormistatud.put("osaleja", row.get("osaleja"));
 
-            for (int i = 1; i < 10; i++) {
+            for (int i = 1; i <= 10; i++) {
                 // kui osaleja ei osalenud edetabelis ss jätame vahele.
                 if (row.get("edetabel_nimi_" + i) == null) continue;
 
@@ -218,7 +220,11 @@ class Pseudo {
                     MAX(CASE WHEN edetabel_id = 8 THEN koht END) AS koht_8,
                     MAX(CASE WHEN edetabel_id = 9 THEN skoor2 END) AS skoor2_9,
                     MAX(CASE WHEN edetabel_id = 9 THEN edetabel_nimi END) AS edetabel_nimi_9,
-                    MAX(CASE WHEN edetabel_id = 9 THEN koht END) AS koht_9
+                    MAX(CASE WHEN edetabel_id = 9 THEN koht END) AS koht_9,
+                    MAX(CASE WHEN edetabel_id = 10 THEN skoor END) AS skoor_10,
+                    MAX(CASE WHEN edetabel_id = 10 THEN skoor2 END) AS skoor2_10,
+                    MAX(CASE WHEN edetabel_id = 10 THEN edetabel_nimi END) AS edetabel_nimi_10,
+                    MAX(CASE WHEN edetabel_id = 10 THEN koht END) AS koht_10
                 FROM
                     dataFinal
                 GROUP BY
