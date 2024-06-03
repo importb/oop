@@ -162,7 +162,7 @@ class Pseudo {
             // osaleja nimi
             mapVormistatud.put("osaleja", row.get("osaleja"));
 
-            for (int i = 1; i <= 10; i++) {
+            for (int i = 1; i < 11; i++) {
                 // kui osaleja ei osalenud edetabelis ss jätame vahele.
                 if (row.get("edetabel_nimi_" + i) == null) continue;
 
@@ -249,7 +249,7 @@ class Pseudo {
             List<Integer> oKohad = new ArrayList<>();
             List<Integer> edetabeliteID = new ArrayList<>();
 
-            for (int i = 1; i < 10; i++) {
+            for (int i = 1; i < 11; i++) {
                 if (row.get("edetabel_nimi_" + i) == null) continue;
 
                 // elo
